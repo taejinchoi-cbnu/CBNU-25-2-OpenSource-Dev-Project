@@ -1,0 +1,38 @@
+# PaddleOCR 핵심 (Python 3.12 호환)
+paddlepaddle==2.6.2
+paddleocr==2.8.1
+
+# 이미지 처리
+opencv-python==4.10.0.84
+Pillow==10.4.0
+numpy==1.26.4
+
+# 시각화 및 유틸리티
+matplotlib==3.9.2
+pandas==2.2.3
+openpyxl==3.1.5
+
+# 추가 의존성
+shapely>=2.0.0
+scikit-image>=0.21.0
+imgaug>=0.4.0
+pyclipper>=1.3.0
+lmdb>=1.4.0
+tqdm>=4.65.0
+rapidfuzz>=3.5.0
+
+# 필수 기본 패키지
+setuptools>=65.0.0
+wheel>=0.40.0
+
+# PaddleOCR
+paddlepaddle==2.6.2
+paddleocr==2.8.1
+
+# 이미지 처리
+opencv-python==4.10.0.84
+Pillow==10.4.0
+numpy==1.26.4
+
+# 추가 의존성
+matplotlib==3.9.2

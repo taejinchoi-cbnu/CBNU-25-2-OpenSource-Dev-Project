@@ -1,0 +1,112 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+.Python
+venv/
+env/
+ENV/
+.venv/
+
+# PaddleOCR 모델 캐시
+.paddleocr/
+~/.paddleocr/
+*.pdparams
+*.pdopt
+*.pdiparams
+*.pdiparams.info
+*.tar
+inference/
+
+# 테스트 이미지 및 결과
+assets/images/*.jpg
+assets/images/*.jpeg
+assets/images/*.png
+assets/images/*.bmp
+!assets/images/.gitkeep
+
+# OCR 출력 결과
+output/results/*.json
+output/results/*.txt
+output/results/*.csv
+output/visualizations/*.jpg
+output/visualizations/*.png
+!output/results/.gitkeep
+!output/visualizations/.gitkeep
+
+# 로그 파일
+*.log
+logs/
+
+# IDE 및 에디터
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# 환경 설정
+.env
+.env.local
+config/local_config.py
+
+# 테스트 커버리지
+htmlcov/
+.coverage
+.pytest_cache/
+.tox/
+
+# 빌드 파일
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# 임시 파일
+*.tmp
+temp/
+tmp/
+cache/
+
+# 문서
+docs/_build/
+
+# 개인정보 포함 가능 파일
+data/
+private/
+*.xlsx
+*.xls
+*.docx
+*.pdf
+!sample.pdf  # 샘플 파일은 예외
+
+# 대용량 파일
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# 모델 파일
+models/
+weights/
+checkpoints/
+*.pth
+*.pkl
+*.h5
+*.onnx
+
+# 데이터베이스
+*.db
+*.sqlite
+*.sqlite3
+
+# 시스템 파일
+desktop.ini
+.directory
