@@ -78,7 +78,7 @@ cache/
 # 문서
 docs/_build/
 
-# 개인정보 포함 가능 파일
+# 개인정보 포함 가능 파일 및 데이터
 data/
 private/
 *.xlsx
@@ -86,6 +86,34 @@ private/
 *.docx
 *.pdf
 !sample.pdf  # 샘플 파일은 예외
+
+# 과목 데이터베이스 및 학습 데이터 (민감정보 포함 가능)
+data/subject_database.xlsx
+data/semester_courses/
+data/training_data/
+!data/templates/  # 템플릿은 포함
+
+# 사용자 피드백 및 개인 데이터
+data/training_data/user_feedback.xlsx
+data/training_data/ocr_corrections.xlsx
+data/training_data/new_subject_candidates.xlsx
+
+# OCR 처리 결과 (개인 성적정보 포함 가능)
+output/
+results/
+processed_images/
+temp_preprocessed*
+*.processed.jpg
+*.processed.png
+
+# 성능 로그 (개인정보 포함 가능)
+logs/performance_log.xlsx
+logs/user_activity.log
+
+# 백업 파일
+backup/
+*.backup
+data_backup_*
 
 # 대용량 파일
 *.zip
