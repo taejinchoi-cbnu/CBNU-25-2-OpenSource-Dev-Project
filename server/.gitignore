@@ -89,3 +89,4 @@ yarn-error.log*
 *.model
 *.onnx
 models/
+.gemini
