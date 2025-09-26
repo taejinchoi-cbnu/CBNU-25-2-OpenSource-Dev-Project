@@ -6,6 +6,9 @@
 
 - [Notion](https://www.notion.so/25-2-26578130257c803f8a5fcda3bd265ccc?source=copy_link)
 
+## Class dir
+수업시간 복습 및 예제를 직접 진행한 코드는 Class 디렉토리에 upload 하고 있습니다.
+
 ## OpenSource Reference Link
 
 ### OCR Engine
