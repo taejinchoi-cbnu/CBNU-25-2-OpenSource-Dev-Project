@@ -83,6 +83,7 @@ data/
 private/
 *.xlsx
 *.xls
+*.csv
 *.docx
 *.pdf
 !sample.pdf  # 샘플 파일은 예외
@@ -92,6 +93,11 @@ data/subject_database.xlsx
 data/semester_courses/
 data/training_data/
 !data/templates/  # 템플릿은 포함
+
+# 학습 및 참조 이미지
+training_images/
+reference_images/
+template_images/
 
 # 사용자 피드백 및 개인 데이터
 data/training_data/user_feedback.xlsx
