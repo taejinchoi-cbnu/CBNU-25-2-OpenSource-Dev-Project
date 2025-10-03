@@ -11,4 +11,9 @@ public class sbbController {
     public String sbb() {
         return "this is sbb page";
     }
+
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/question/list";
+    }
 }
