@@ -14,5 +14,9 @@ public class SupabaseProperties {
     private String anonKey;
     private String serviceRoleKey;
     private String jwksUrl;
+    private boolean cookieSecure;
 
+    public boolean isCookieSecure() {
+        return cookieSecure;
+    }
 }
