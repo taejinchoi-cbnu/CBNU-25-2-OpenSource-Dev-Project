@@ -26,8 +26,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 // API 경로별 접근 권한 설정
+                // swagger 추가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // /api/auth/ 로 시작하는 모든 경로는 인증 없이 허용
+                        .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated() // 그 외 나머지 모든 요청은 인증 필요
                 )
 

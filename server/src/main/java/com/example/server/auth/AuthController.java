@@ -6,6 +6,7 @@ import com.example.server.auth.dto.SignUpRequest;
 import com.example.server.auth.dto.SupabaseUser;
 import com.example.server.auth.service.AuthService;
 import com.example.server.config.SupabaseProperties;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +20,7 @@ import java.time.Duration;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Auth Controller", description = "로그인, 회원가입, 로그아웃, 토큰 갱신 처리 컨트롤러")
 public class AuthController {
 
     private final AuthService authService;
