@@ -37,6 +37,7 @@ out/
 *.env
 .env.local
 .env.*.local
+application.properties
 application-local.yml
 application-local.properties
 application-dev.yml

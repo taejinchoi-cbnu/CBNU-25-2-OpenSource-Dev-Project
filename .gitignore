@@ -38,3 +38,5 @@ target/
 # Backup files
 *.bak
 *.backup
+**/application.properties  
+**/application-local.properties 

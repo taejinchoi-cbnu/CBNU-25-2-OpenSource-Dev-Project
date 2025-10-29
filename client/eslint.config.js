@@ -15,7 +15,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
 
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["**/*.{ts,tsx,js}"],
     plugins: {
       react,
       "react-hooks": reactHooks,
