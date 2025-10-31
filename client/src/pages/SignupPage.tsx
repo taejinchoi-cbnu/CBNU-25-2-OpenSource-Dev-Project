@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { authService } from "../api/authService";
 import { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 function SignupPage() {
   const [email, setEmail] = useState("");
@@ -18,7 +19,12 @@ function SignupPage() {
       navigate("/login");
     },
     onError: (error) => {
-      console.error("회원가입 실패 :", error);
+      console.error("회원가입 실패:", error);
+      let errorMsg = "다시 시도해주세요";
+      if (error instanceof AxiosError) {
+        errorMsg = error.response?.data?.message || errorMsg;
+      }
+      toast.error(`회원가입 실패: ${errorMsg}`);
     },
   });
 
@@ -65,14 +71,6 @@ function SignupPage() {
           {signupMutation.isPending ? "회원가입 중..." : "회원가입"}
         </button>
       </form>
-      {signupMutation.isError && (
-        <p style={{ color: "red" }}>
-          {signupMutation.error instanceof AxiosError
-            ? signupMutation.error.response?.data?.message ||
-              "회원가입에 실패했습니다. 다시 시도해주세요."
-            : "회원가입에 실패했습니다. 다시 시도해주세요."}
-        </p>
-      )}
     </div>
   );
 }
