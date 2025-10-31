@@ -105,8 +105,6 @@
 
 ---
 
-# 서버 아키텍처 가이드 (Server Architecture Guide)
-
 # 개발 진행 상황 및 다음 단계
 
 ## 완료된 작업
@@ -118,10 +116,19 @@
   - 인증 상태에 따른 네비게이션 바 UI 변경.
   - 인증이 필요한 페이지를 위한 `ProtectedRoute` 구현.
   - `Zustand`를 이용한 전역 인증 상태 관리 및 `React Query`를 이용한 서버 상태 관리 통합.
+  - **상세 리뷰 완료**: `useMutation`의 다양한 옵션(onMutate, onSettled 등) 및 `onError` 콜백의 역할과 UI 에러 메시지 분리 원칙에 대한 상세 분석 완료.
 
 ## 다음 작업 계획
 
-1.  **게시판 기능 구현 (`feature/board`):**
+1.  **에러 처리 개선 (`feature/error-handling`):**
+    - **목표**: 사용자 경험을 향상시키기 위해 전역적인 에러 메시지 표시 시스템을 구축합니다.
+    - **작업 내용**:
+      - 토스트(Toast) 라이브러리 (예: `react-toastify` 또는 `sonner`) 선정 및 설치.
+      - `ToastProvider`를 `main.tsx` 또는 `App.tsx`에 설정.
+      - `useMutation`의 `onError` 콜백 및 기타 에러 발생 지점에서 토스트 메시지를 활용하도록 코드 수정.
+      - `LoginPage.tsx`, `SignupPage.tsx`, `Navbar.tsx` 등 기존 에러 표시 로직을 토스트 시스템으로 통합.
+
+2.  **게시판 기능 구현 (`feature/board`):**
     - **목표**: 사용자들이 정보를 공유할 수 있는 익명 게시판을 구현합니다.
     - **작업 내용**:
       - 게시글 목록 조회, 상세 조회, 작성, 수정, 삭제 API 연동.

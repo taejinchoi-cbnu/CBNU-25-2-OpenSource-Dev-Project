@@ -22,7 +22,7 @@ function AuthInitializer({ children }: AuthInitializerProps) {
           return false;
         }
       }
-      return failureCount < 3;
+      return failureCount < 2;
     },
     enabled: true,
     refetchOnWindowFocus: false,

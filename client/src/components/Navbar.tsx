@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "../store/authStore";
 import { authService } from "../api/authService";
 import { AxiosError } from "axios";
+import { toast } from "react-toastify";
 
 function Navbar() {
   const { accessToken, clearAuth } = useAuthStore();
@@ -15,12 +16,12 @@ function Navbar() {
       navigate("/login"); // 로그아웃 후 로그인 페이지로 이동
     },
     onError: (error) => {
-      console.error("Logout failed:", error);
-      let errorMessage = "다시 시도해주세요.";
+      console.error("로그아웃 실패:", error);
+      let errorMsg = "다시 시도해주세요";
       if (error instanceof AxiosError) {
-        errorMessage = error.response?.data?.message || errorMessage;
+        errorMsg = error.response?.data?.message || errorMsg;
       }
-      alert("로그아웃 실패: " + errorMessage);
+      toast.error(`로그아웃 실패: ${errorMsg}`);
     },
   });
 

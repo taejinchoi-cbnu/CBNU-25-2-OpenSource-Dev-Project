@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { authService } from "../api/authService";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -20,6 +21,11 @@ function LoginPage() {
     },
     onError: (error) => {
       console.error("로그인 실패:", error);
+      let errorMsg = "다시 시도해주세요";
+      if (error instanceof AxiosError) {
+        errorMsg = error.response?.data?.message || errorMsg;
+      }
+      toast.error(`로그인 실패: ${errorMsg}`);
     },
   });
 
@@ -30,6 +36,7 @@ function LoginPage() {
 
   return (
     <div>
+      <ToastContainer />
       <h1>로그인</h1>
       <form onSubmit={handleSubmit}>
         <div>
@@ -56,14 +63,6 @@ function LoginPage() {
           {loginMutation.isPending ? "로그인 중..." : "로그인"}
         </button>
       </form>
-      {loginMutation.isError && (
-        <p style={{ color: "red" }}>
-          {loginMutation.error instanceof AxiosError
-            ? loginMutation.error.response?.data?.message ||
-              "로그인에 실패했습니다. 다시 시도해주세요."
-            : "로그인에 실패했습니다. 다시 시도해주세요."}
-        </p>
-      )}
     </div>
   );
 }
