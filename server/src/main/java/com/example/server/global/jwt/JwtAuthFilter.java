@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -27,20 +28,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
         String token = null;
-        String email = null;
+        UUID userId = null;
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             if (jwtUtil.validateToken(token)) {
-                email = jwtUtil.getEmail(token);
+                userId = jwtUtil.getUserId(token);
             }
         }
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = new User(email, "", new ArrayList<>());
+        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // UserDetails는 여전히 필요하지만, Principal은 UUID로 설정
+            UserDetails userDetails = new User(userId.toString(), "", new ArrayList<>());
 
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(userId, null, userDetails.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
