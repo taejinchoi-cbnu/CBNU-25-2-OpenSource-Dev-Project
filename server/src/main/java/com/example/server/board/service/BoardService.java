@@ -41,7 +41,7 @@ public class BoardService {
     }
 
     @Transactional
-    public PostResponse getPost(Long postId) {
+    public PostResponse getPostByPostId(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("해당 ID의 게시글을 찾을 수 없습니다: " + postId));
 

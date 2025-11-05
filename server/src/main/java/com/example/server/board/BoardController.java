@@ -65,10 +65,10 @@ public class BoardController {
                     @ApiResponse(responseCode = "500", description = "서버 내부 오류")
             })
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostResponse> getPost(
+    public ResponseEntity<PostResponse> getPostByPostId(
             @Parameter(description = "조회할 게시글 ID", required = true) @PathVariable Long postId
     ) {
-        PostResponse response = boardService.getPost(postId);
+        PostResponse response = boardService.getPostByPostId(postId);
         return ResponseEntity.ok(response);
     }
 
