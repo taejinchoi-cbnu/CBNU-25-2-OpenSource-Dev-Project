@@ -23,6 +23,9 @@ public class Comment {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @Column(name = "post_id", updatable = false, insertable = false)
+    private Long postId;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
@@ -30,10 +33,10 @@ public class Comment {
     private UUID authorId;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 }
