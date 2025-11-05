@@ -9,8 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,9 +28,8 @@ public class Question {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @ManyToOne
-    private LocalDateTime createTime;
+    private LocalDateTime createDate;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE) // cascadeType.Remove를 통해 답변들도 모두 삭제되도록 함
     private List<Answer> answerList;
 }

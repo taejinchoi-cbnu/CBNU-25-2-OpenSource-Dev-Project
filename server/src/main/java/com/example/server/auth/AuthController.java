@@ -1,11 +1,11 @@
-package com.example.server.auth;
+package com.mysite.server.auth;
 
-import com.example.server.auth.dto.LoginRequest;
-import com.example.server.auth.dto.LoginResponse;
-import com.example.server.auth.dto.SignUpRequest;
-import com.example.server.auth.dto.SupabaseUser;
-import com.example.server.auth.service.AuthService;
-import com.example.server.config.SupabaseProperties;
+import com.mysite.server.auth.dto.LoginRequest;
+import com.mysite.server.auth.dto.LoginResponse;
+import com.mysite.server.auth.dto.SignUpRequest;
+import com.mysite.server.auth.dto.SupabaseUser;
+import com.mysite.server.auth.service.AuthService;
+import com.mysite.server.config.SupabaseProperties;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
