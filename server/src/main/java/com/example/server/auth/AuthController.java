@@ -43,7 +43,10 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<LoginResponse> refresh(@CookieValue("refreshToken") String refreshToken) {
+    public ResponseEntity<LoginResponse> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        if (refreshToken == null) {
+            return ResponseEntity.status(401).build();
+        }
         AuthResponse authResponse = authService.refresh(refreshToken);
         ResponseCookie cookie = createRefreshTokenCookie(authResponse.getRefreshToken(), authResponse.getExpiresIn());
         LoginResponse loginResponse = new LoginResponse(authResponse.getAccessToken(), authResponse.getUser());
