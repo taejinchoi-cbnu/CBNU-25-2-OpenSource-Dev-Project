@@ -26,7 +26,7 @@ public class ProfileResponse {
                 .collect(Collectors.toList());
 
         return ProfileResponse.builder()
-                .email(user.getRawUserMetaData().get("email").asText())
+                .email(user.getEmail())
                 .nickname(user.getNickname())
                 .posts(postSummaries)
                 .comments(commentSummaries)

@@ -20,6 +20,8 @@ public class User {
     @Id
     private UUID id;
 
+    private String email;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "raw_user_meta_data")
     private JsonNode rawUserMetaData;
