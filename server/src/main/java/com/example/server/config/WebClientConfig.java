@@ -1,4 +1,4 @@
-package com.mysite.server.config;
+package com.example.server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

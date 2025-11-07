@@ -1,9 +1,9 @@
-package com.mysite.server.auth.service;
+package com.example.server.auth.service;
 
-import com.mysite.server.auth.dto.AuthResponse;
-import com.mysite.server.auth.dto.LoginRequest;
-import com.mysite.server.auth.dto.SignUpRequest;
-import com.mysite.server.auth.exception.SupabaseAuthException;
+import com.example.server.auth.dto.AuthResponse;
+import com.example.server.auth.dto.LoginRequest;
+import com.example.server.auth.dto.SignUpRequest;
+import com.example.server.auth.exception.SupabaseAuthException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;

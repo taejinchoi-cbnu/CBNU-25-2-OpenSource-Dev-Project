@@ -1,4 +1,4 @@
-package com.mysite.server.config;
+package com.example.server.config;
 
 import lombok.Getter;
 import lombok.Setter;

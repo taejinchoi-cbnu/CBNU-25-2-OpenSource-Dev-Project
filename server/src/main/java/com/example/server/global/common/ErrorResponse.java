@@ -1,4 +1,4 @@
-package com.mysite.server.global.common;
+package com.example.server.global.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
