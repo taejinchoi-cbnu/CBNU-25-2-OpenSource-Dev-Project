@@ -1,6 +1,6 @@
 package com.example.server.user.dto;
 
-import com.example.server.auth.entity.AuthUser;
+import com.example.server.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,16 +8,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@Builder // @Setter 대신 @Builder 사용
+@Builder
 public class ProfileResponse {
 
     private String email;
-    private String nickname; // 'nickName' -> 'nickname'으로 수정
+    private String nickname;
     private List<PostSummary> posts;
     private List<CommentSummary> comments;
 
-    // 메소드 내용 전체 구현
-    public static ProfileResponse from(AuthUser user) {
+    public static ProfileResponse from(User user) {
         List<PostSummary> postSummaries = user.getPosts().stream()
                 .map(PostSummary::from)
                 .collect(Collectors.toList());
