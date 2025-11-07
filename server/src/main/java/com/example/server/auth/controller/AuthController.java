@@ -1,4 +1,4 @@
-package com.example.server.auth;
+package com.example.server.auth.controller;
 
 import com.example.server.auth.dto.AuthResponse;
 import com.example.server.auth.dto.LoginRequest;
