@@ -24,6 +24,7 @@ import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -82,6 +83,16 @@ public class JwtUtil {
      */
     public String getEmail(String token) {
         return getClaims(token).get("email", String.class);
+    }
+
+    /**
+     * JWT 토큰에서 사용자 ID (UUID) 클레임을 추출
+     * @param token JWT 문자열
+     * @return 사용자 ID (UUID)
+     */
+    public UUID getUserId(String token) {
+        String subject = getClaims(token).getSubject();
+        return UUID.fromString(subject);
     }
 
     /**

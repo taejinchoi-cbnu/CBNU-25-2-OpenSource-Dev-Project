@@ -1,5 +1,6 @@
 package com.example.server.auth;
 
+import com.example.server.auth.dto.AuthResponse;
 import com.example.server.auth.dto.LoginRequest;
 import com.example.server.auth.dto.LoginResponse;
 import com.example.server.auth.dto.SignUpRequest;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
@@ -27,36 +27,32 @@ public class AuthController {
     private final SupabaseProperties supabaseProperties;
 
     @PostMapping("/signup")
-    public Mono<ResponseEntity<SupabaseUser>> signup(@Valid @RequestBody SignUpRequest signUpRequest) {
-        return authService.signUp(signUpRequest)
-                .map(authResponse -> {
-                    return ResponseEntity.ok()
-                            .body(authResponse.getUser());
-                });
+    public ResponseEntity<SupabaseUser> signup(@Valid @RequestBody SignUpRequest signUpRequest) {
+        AuthResponse authResponse = authService.signUp(signUpRequest);
+        return ResponseEntity.ok(authResponse.getUser());
     }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<LoginResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
-        return authService.login(loginRequest)
-                .map(authResponse -> {
-                    ResponseCookie cookie = createRefreshTokenCookie(authResponse.getRefreshToken(), authResponse.getExpiresIn());
-                    LoginResponse loginResponse = new LoginResponse(authResponse.getAccessToken(), authResponse.getUser());
-                    return ResponseEntity.ok()
-                            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                            .body(loginResponse);
-                });
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+        AuthResponse authResponse = authService.login(loginRequest);
+        ResponseCookie cookie = createRefreshTokenCookie(authResponse.getRefreshToken(), authResponse.getExpiresIn());
+        LoginResponse loginResponse = new LoginResponse(authResponse.getAccessToken(), authResponse.getUser());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(loginResponse);
     }
 
     @PostMapping("/refresh")
-    public Mono<ResponseEntity<LoginResponse>> refresh(@CookieValue("refreshToken") String refreshToken) {
-        return authService.refresh(refreshToken)
-                .map(authResponse -> {
-                    ResponseCookie cookie = createRefreshTokenCookie(authResponse.getRefreshToken(), authResponse.getExpiresIn());
-                    LoginResponse loginResponse = new LoginResponse(authResponse.getAccessToken(), authResponse.getUser());
-                    return ResponseEntity.ok()
-                            .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                            .body(loginResponse);
-                });
+    public ResponseEntity<LoginResponse> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        if (refreshToken == null) {
+            return ResponseEntity.status(401).build();
+        }
+        AuthResponse authResponse = authService.refresh(refreshToken);
+        ResponseCookie cookie = createRefreshTokenCookie(authResponse.getRefreshToken(), authResponse.getExpiresIn());
+        LoginResponse loginResponse = new LoginResponse(authResponse.getAccessToken(), authResponse.getUser());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(loginResponse);
     }
 
     @PostMapping("/logout")
