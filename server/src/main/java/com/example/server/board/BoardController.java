@@ -13,19 +13,44 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/board")
 @RequiredArgsConstructor
+@RequestMapping("/api/board")
 @Tag(name = "Board Controller", description = "게시글 및 댓글 관련 API 컨트롤러")
 public class BoardController {
 
     private final BoardService boardService;
+
+    @Operation(summary = "특정 게시글 조회", description = "ID를 통해 특정 게시글의 상세 정보를 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "게시글 조회 성공"),
+                    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+                    @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음"),
+                    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+            })
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity<PostResponse> getPost(
+            @Parameter(description = "조회할 게시글 ID", required = true) @PathVariable Long postId) {
+        PostResponse response = boardService.getPostByPostId(postId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "모든 게시글 조회", description = "페이지네이션을 적용하여 모든 게시글 목록을 조회합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공"),
+                    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
+                    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
+            })
+    @GetMapping("/posts")
+    public ResponseEntity<Page<PostResponse>> getPosts(
+            @Parameter(description = "페이지네이션 정보") @PageableDefault(sort = "createdAt,desc") Pageable pageable) {
+        Page<PostResponse> response = boardService.getPosts(pageable);
+        return ResponseEntity.ok(response);
+    }
 
     @Operation(summary = "새 게시글 생성", description = "새로운 게시글을 생성합니다.",
             responses = {
@@ -36,40 +61,10 @@ public class BoardController {
             })
     @PostMapping("/posts")
     public ResponseEntity<PostResponse> createPost(
-            @Parameter(description = "게시글 생성 요청 DTO", required = true) @Valid @RequestBody PostCreateRequest request,
-            @Parameter(hidden = true) @AuthenticationPrincipal UUID userId
-    ) {
-        PostResponse response = boardService.createPost(request, userId);
-        return ResponseEntity.created(URI.create("/api/board/posts/" + response.getId())).body(response);
-    }
-
-    @Operation(summary = "모든 게시글 조회", description = "페이지네이션을 적용하여 모든 게시글 목록을 조회합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공"),
-                    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
-                    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-            })
-    @GetMapping("/posts")
-    public ResponseEntity<Page<PostListResponse>> getPosts(
-            @Parameter(description = "페이지네이션 및 정렬 정보") @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
-    ) {
-        Page<PostListResponse> responses = boardService.getPosts(pageable);
-        return ResponseEntity.ok(responses);
-    }
-
-    @Operation(summary = "특정 게시글 조회", description = "ID를 통해 특정 게시글의 상세 정보를 조회합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "게시글 조회 성공"),
-                    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
-                    @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음"),
-                    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-            })
-    @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostResponse> getPostByPostId(
-            @Parameter(description = "조회할 게시글 ID", required = true) @PathVariable Long postId
-    ) {
-        PostResponse response = boardService.getPostByPostId(postId);
-        return ResponseEntity.ok(response);
+            @Parameter(description = "게시글 생성 요청 DTO", required = true) @Valid @RequestBody PostCreateRequest request) {
+        PostResponse response = boardService.createPost(request);
+        return ResponseEntity.created(URI.create("/api/board/posts/" + response.getId()))
+                .body(response);
     }
 
     @Operation(summary = "게시글 수정", description = "ID를 통해 특정 게시글의 제목과 내용을 수정합니다.",
@@ -84,10 +79,8 @@ public class BoardController {
     @PutMapping("/posts/{postId}")
     public ResponseEntity<PostResponse> updatePost(
             @Parameter(description = "수정할 게시글 ID", required = true) @PathVariable Long postId,
-            @Parameter(description = "게시글 수정 요청 DTO", required = true) @Valid @RequestBody PostUpdateRequest request,
-            @Parameter(hidden = true) @AuthenticationPrincipal UUID userId
-    ) {
-        PostResponse response = boardService.updatePost(postId, request, userId);
+            @Parameter(description = "게시글 수정 요청 DTO", required = true) @Valid @RequestBody PostUpdateRequest request) {
+        PostResponse response = boardService.updatePost(postId, request);
         return ResponseEntity.ok(response);
     }
 
@@ -101,10 +94,8 @@ public class BoardController {
             })
     @DeleteMapping("/posts/{postId}")
     public ResponseEntity<Void> deletePost(
-            @Parameter(description = "삭제할 게시글 ID", required = true) @PathVariable Long postId,
-            @Parameter(hidden = true) @AuthenticationPrincipal UUID userId
-    ) {
-        boardService.deletePost(postId, userId);
+            @Parameter(description = "삭제할 게시글 ID", required = true) @PathVariable Long postId) {
+        boardService.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
 
@@ -119,27 +110,10 @@ public class BoardController {
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<CommentResponse> createComment(
             @Parameter(description = "댓글을 생성할 게시글 ID", required = true) @PathVariable Long postId,
-            @Parameter(description = "댓글 생성 요청 DTO", required = true) @Valid @RequestBody CommentCreateRequest request,
-            @Parameter(hidden = true) @AuthenticationPrincipal UUID userId
-    ) {
-        CommentResponse response = boardService.createComment(postId, request, userId);
-        return ResponseEntity.created(URI.create("/api/board/posts/" + postId + "/comments/" + response.getId())).body(response);
-    }
-
-    @Operation(summary = "특정 게시글의 댓글 조회", description = "특정 게시글에 달린 모든 댓글 목록을 페이지네이션하여 조회합니다.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "댓글 목록 조회 성공"),
-                    @ApiResponse(responseCode = "401", description = "인증되지 않은 사용자"),
-                    @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음"),
-                    @ApiResponse(responseCode = "500", description = "서버 내부 오류")
-            })
-    @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<Page<CommentResponse>> getComments(
-            @Parameter(description = "댓글을 조회할 게시글 ID", required = true) @PathVariable Long postId,
-            @Parameter(description = "페이지네이션 및 정렬 정보") @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable
-    ) {
-        Page<CommentResponse> responses = boardService.getCommentsByPostId(postId, pageable);
-        return ResponseEntity.ok(responses);
+            @Parameter(description = "댓글 생성 요청 DTO", required = true) @Valid @RequestBody CommentCreateRequest request) {
+        CommentResponse response = boardService.createComment(postId, request);
+        return ResponseEntity.created(URI.create("/api/board/posts/" + postId + "/comments/" + response.getId()))
+                .body(response);
     }
 
     @Operation(summary = "댓글 수정", description = "특정 댓글의 내용을 수정합니다.",
@@ -153,12 +127,10 @@ public class BoardController {
             })
     @PutMapping("/posts/{postId}/comments/{commentId}")
     public ResponseEntity<CommentResponse> updateComment(
-            @Parameter(description = "게시글 ID (경로 일관성을 위해 포함)", required = true) @PathVariable Long postId,
+            @Parameter(description = "게시글 ID", required = true) @PathVariable Long postId,
             @Parameter(description = "수정할 댓글 ID", required = true) @PathVariable Long commentId,
-            @Parameter(description = "댓글 수정 요청 DTO", required = true) @Valid @RequestBody CommentUpdateRequest request,
-            @Parameter(hidden = true) @AuthenticationPrincipal UUID userId
-    ) {
-        CommentResponse response = boardService.updateComment(commentId, request, userId);
+            @Parameter(description = "댓글 수정 요청 DTO", required = true) @Valid @RequestBody CommentUpdateRequest request) {
+        CommentResponse response = boardService.updateComment(postId, commentId, request);
         return ResponseEntity.ok(response);
     }
 
@@ -172,11 +144,9 @@ public class BoardController {
             })
     @DeleteMapping("/posts/{postId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
-            @Parameter(description = "게시글 ID (경로 일관성을 위해 포함)", required = true) @PathVariable Long postId,
-            @Parameter(description = "삭제할 댓글 ID", required = true) @PathVariable Long commentId,
-            @Parameter(hidden = true) @AuthenticationPrincipal UUID userId
-    ) {
-        boardService.deleteComment(commentId, userId);
+            @Parameter(description = "게시글 ID", required = true) @PathVariable Long postId,
+            @Parameter(description = "삭제할 댓글 ID", required = true) @PathVariable Long commentId) {
+        boardService.deleteComment(postId, commentId);
         return ResponseEntity.noContent().build();
     }
 }
