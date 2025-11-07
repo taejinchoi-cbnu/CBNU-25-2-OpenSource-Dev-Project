@@ -15,7 +15,7 @@ function SignupPage() {
   const signupMutation = useMutation({
     mutationFn: authService.signup,
     onSuccess: () => {
-      alert("회원가입 성공!");
+      toast.success("회원가입 성공!");
       navigate("/login");
     },
     onError: (error) => {

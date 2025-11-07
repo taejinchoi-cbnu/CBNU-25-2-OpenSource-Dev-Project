@@ -9,6 +9,8 @@ function LoadingSpinner() {
         fontSize: "1.2em",
         color: "#333",
       }}
+      role="status"
+      aria-live="polite"
     >
       로딩중..
     </div>
