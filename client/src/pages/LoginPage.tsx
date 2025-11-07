@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { authService } from "../api/authService";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -36,7 +36,6 @@ function LoginPage() {
 
   return (
     <div>
-      <ToastContainer />
       <h1>로그인</h1>
       <form onSubmit={handleSubmit}>
         <div>
