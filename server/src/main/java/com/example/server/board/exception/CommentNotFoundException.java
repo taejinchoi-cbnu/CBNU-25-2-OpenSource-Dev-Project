@@ -1,0 +1,7 @@
+package com.example.server.board.exception;
+
+public class CommentNotFoundException extends RuntimeException {
+    public CommentNotFoundException(String message) {
+        super(message);
+    }
+}

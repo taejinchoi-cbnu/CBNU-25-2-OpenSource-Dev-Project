@@ -37,14 +37,54 @@ function Navbar() {
     navigate("/signup");
   };
 
+  const handleHome = () => {
+    navigate("/");
+  };
+
+  const handleBoard = () => {
+    navigate("/board");
+  };
+
   return (
     <nav
       style={{
         display: "flex",
+        justifyContent: "space-between",
         alignItems: "center",
         padding: "10px 20px",
+        borderBottom: "1px solid #ccc",
       }}
     >
+      <div>
+        <button
+          onClick={handleHome}
+          style={{
+            padding: "8px 15px",
+            marginRight: "10px",
+            cursor: "pointer",
+            backgroundColor: "#6c757d",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+          }}
+        >
+          홈
+        </button>
+        <button
+          onClick={handleBoard}
+          style={{
+            padding: "8px 15px",
+            marginRight: "10px",
+            cursor: "pointer",
+            backgroundColor: "#17a2b8",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+          }}
+        >
+          게시판
+        </button>
+      </div>
       <div>
         {accessToken ? (
           <button
