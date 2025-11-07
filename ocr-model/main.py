@@ -1,219 +1,142 @@
-from paddleocr import PaddleOCR
 import cv2
 import os
-import json
-from datetime import datetime
-from typing import List, Dict, Optional, Tuple
-import numpy as np
+from paddleocr import PaddleOCR, draw_ocr
+from utils.image_util import plt_imshow, put_text
+from paddleocr.paddleocr import MODEL_URLS
+
 
 class MyPaddleOCR:
-    """PaddleOCR 한국어 OCR 래퍼 클래스"""
-    
-    def __init__(self, lang='korean', use_gpu=False):
-        """
-        PaddleOCR 초기화
-        
-        Args:
-            lang: 사용할 언어 (기본값: 'korean')
-            use_gpu: GPU 사용 여부 (기본값: False)
-        """
+    def __init__(self, lang: str = "korean", **kwargs):
         self.lang = lang
-        self.use_gpu = use_gpu
-        self.ocr = None
-        self.init_ocr()
-        
-    def init_ocr(self):
-        """OCR 엔진 초기화"""
-        try:
-            print(f"🔄 Initializing PaddleOCR for language: {self.lang}")
-            self.ocr = PaddleOCR(
-                use_angle_cls=True,
-                lang=self.lang,
-                use_gpu=self.use_gpu,
-                show_log=False
-            )
-            print(f"✅ PaddleOCR initialized successfully!")
-        except Exception as e:
-            print(f"❌ Failed to initialize PaddleOCR: {e}")
-            raise
+        self._ocr = PaddleOCR(lang=lang, use_angle_cls=True, show_log=False)
+        self.img_path = None
+        self.ocr_result = {}
     
-    def get_available_langs(self) -> List[str]:
-        """
-        지원 가능한 언어 목록 조회
+    def get_available_langs(self):
+        langs_info = []
+
+        for idx, model_name in enumerate(list(MODEL_URLS['OCR'].keys())):
+            for lang in list(MODEL_URLS['OCR'][model_name]['rec'].keys()):
+                if lang not in langs_info:
+                    langs_info.append(lang)
         
-        Returns:
-            지원 언어 리스트
-        """
-        available_langs = [
-            'ch', 'en', 'korean', 'japan', 'chinese_cht', 
-            'ta', 'te', 'ka', 'latin', 'arabic', 
-            'cyrillic', 'devanagari', 'french', 'german', 'structure'
-        ]
+        print('Available Language : {}'.format(langs_info))
+        return langs_info
         
-        print(f"Available Language : {available_langs}")
-        return available_langs
-    
-    def get_available_models(self) -> Dict[str, List[str]]:
-        """
-        사용 가능한 Model 조회
+    def get_available_models(self):
+        model_info = {}
+
+        for idx, model_name in enumerate(list(MODEL_URLS['OCR'].keys())):
+            model_info[model_name] = list(MODEL_URLS['OCR'][model_name]['rec'].keys())
+            print('#{} Model Version : [{}] - Language : {}'.format(idx+1, model_name, list(MODEL_URLS['OCR'][model_name]['rec'].keys())))
         
-        Returns:
-            모델 버전별 지원 언어 딕셔너리
-        """
-        models = {
-            'PP-OCRv3': ['ch', 'en', 'korean', 'japan', 'chinese_cht', 
-                        'ta', 'te', 'ka', 'latin', 'arabic', 
-                        'cyrillic', 'devanagari'],
-            'PP-OCRv2': ['ch'],
-            'PP-OCR': ['ch', 'en', 'french', 'german', 'korean', 
-                      'japan', 'chinese_cht', 'ta', 'te', 'ka', 
-                      'latin', 'arabic', 'cyrillic', 'devanagari', 'structure']
-        }
+        return model_info
         
-        # 출력 형식 맞추기
-        for idx, (version, langs) in enumerate(models.items(), 1):
-            print(f"#{idx} Model Version : [{version}] - Language : {langs}")
+    def get_ocr_result(self):
+        return self.ocr_result
+
+    def get_img_path(self):
+        return self.img_path
+
+    def show_img(self):
+        plt_imshow(img=self.img_path)
         
-        return models
-    
-    def run_ocr(self, img_path: str, debug: bool = False) -> List[str]:
-        """
-        OCR 실행
+    def run_ocr(self, img_path: str, debug: bool = False):
+        self.img_path = img_path
+        ocr_text = []
+        result = self._ocr.ocr(img_path, cls=True)
         
-        Args:
-            img_path: 이미지 파일 경로
-            debug: 디버그 모드 여부
-        
-        Returns:
-            추출된 텍스트 리스트
-        """
-        # 디버그 모드 설정
-        if debug:
-            self.ocr = PaddleOCR(
-                use_angle_cls=True,
-                lang=self.lang,
-                use_gpu=self.use_gpu,
-                show_log=True  # 디버그 모드에서는 로그 표시
-            )
-        
-        # 이미지 존재 확인
-        if not os.path.exists(img_path):
-            raise FileNotFoundError(f"Image file not found: {img_path}")
-        
-        # OCR 실행
-        result = self.ocr.ocr(img_path, cls=True)
-        
-        # 텍스트 추출
-        extracted_texts = []
         if result and result[0]:
-            for line in result[0]:
-                text = line[1][0]
-                extracted_texts.append(text)
-        
-        # 결과 출력
-        if extracted_texts:
-            print(extracted_texts)
+            self.ocr_result = result[0]
+            for r in result[0]:
+                ocr_text.append(r[1][0])
+                if debug:
+                    print(f"Text: {r[1][0]}, Confidence: {r[1][1]:.4f}")
         else:
-            print("No text detected")
-        
-        # 결과 저장
-        self._save_results(img_path, result)
-        
-        return extracted_texts
+            self.ocr_result = []
+            ocr_text = ["No text detected."]
+
+        if debug and self.ocr_result:
+            self.show_img_with_ocr()
+
+        return ocr_text
     
-    def _save_results(self, img_path: str, result: List):
-        """OCR 결과 저장"""
-        # 출력 디렉토리 생성
-        os.makedirs('output/results', exist_ok=True)
-        
-        # 타임스탬프
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        
-        # JSON 형식으로 저장
-        output_data = {
-            'image_path': img_path,
-            'timestamp': datetime.now().isoformat(),
-            'language': self.lang,
-            'results': []
-        }
-        
-        if result and result[0]:
-            for line in result[0]:
-                output_data['results'].append({
-                    'text': line[1][0],
-                    'confidence': float(line[1][1]),
-                    'bbox': line[0]
-                })
-        
-        # JSON 파일 저장
-        output_file = f'output/results/ocr_{timestamp}.json'
-        with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(output_data, f, ensure_ascii=False, indent=2)
-        
-        print(f"💾 Results saved to: {output_file}")
-    
-    def visualize_result(self, img_path: str, save: bool = True) -> np.ndarray:
-        """
-        OCR 결과 시각화
-        
-        Args:
-            img_path: 이미지 파일 경로
-            save: 시각화 이미지 저장 여부
-        
-        Returns:
-            시각화된 이미지
-        """
-        # OCR 실행
-        result = self.ocr.ocr(img_path, cls=True)
-        
-        # 이미지 읽기
-        img = cv2.imread(img_path)
-        
-        # 바운딩 박스 그리기
-        if result and result[0]:
-            for line in result[0]:
-                bbox = np.array(line[0], dtype=np.int32)
-                text = line[1][0]
-                confidence = line[1][1]
-                
-                # 신뢰도에 따른 색상
-                if confidence > 0.95:
-                    color = (0, 255, 0)  # 녹색
-                elif confidence > 0.85:
-                    color = (0, 255, 255)  # 노란색
-                else:
-                    color = (0, 0, 255)  # 빨간색
-                
-                # 바운딩 박스 그리기
-                cv2.polylines(img, [bbox], True, color, 2)
-                
-                # 텍스트 표시 (짧은 텍스트만)
-                if len(text) <= 10:
-                    cv2.putText(img, text, tuple(bbox[0]), 
-                              cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
-        
-        # 저장
-        if save:
-            os.makedirs('output/visualizations', exist_ok=True)
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            output_path = f'output/visualizations/vis_{timestamp}.jpg'
-            cv2.imwrite(output_path, img)
-            print(f"📊 Visualization saved to: {output_path}")
-        
-        return img
+    def show_img_with_ocr(self):
+        img = cv2.imread(self.img_path)
+        roi_img = img.copy()
+
+        for text_result in self.ocr_result:
+            text = text_result[1][0]
+            confidence = text_result[1][1]
+            tlX = int(text_result[0][0][0])
+            tlY = int(text_result[0][0][1])
+            trX = int(text_result[0][1][0])
+            trY = int(text_result[0][1][1])
+            brX = int(text_result[0][2][0])
+            brY = int(text_result[0][2][1])
+            blX = int(text_result[0][3][0])
+            blY = int(text_result[0][3][1])
+
+            pts = ((tlX, tlY), (trX, trY), (brX, brY), (blX, blY))
+
+            topLeft = pts[0]
+            topRight = pts[1]
+            bottomRight = pts[2]
+            bottomLeft = pts[3]
+
+            cv2.line(roi_img, topLeft, topRight, (0, 255, 0), 2)
+            cv2.line(roi_img, topRight, bottomRight, (0, 255, 0), 2)
+            cv2.line(roi_img, bottomRight, bottomLeft, (0, 255, 0), 2)
+            cv2.line(roi_img, bottomLeft, topLeft, (0, 255, 0), 2)
+            
+            display_text = f"{text} ({confidence:.2f})"
+            roi_img = put_text(roi_img, display_text, topLeft[0], topLeft[1] - 20, font_size=15)
+
+        plt_imshow(["Original", "OCR Result"], [img, roi_img], figsize=(16, 10))
 
 
-# 사용 예제
-if __name__ == "__main__":
+def main():
+    """테스트 이미지들에 대해 OCR을 수행하는 메인 함수"""
+    print("=" * 50)
+    print("Korean OCR using PaddleOCR - Test")
+    print("=" * 50)
+    
     # OCR 객체 생성
-    ocr = MyPaddleOCR()
+    ocr = MyPaddleOCR(lang="korean")
     
-    # 지원 언어 확인
+    # 사용 가능한 언어 및 모델 정보 출력
+    print("\n[Available Languages]")
     ocr.get_available_langs()
     
-    # 모델 정보 확인
+    print("\n[Available Models]")
     ocr.get_available_models()
     
-    # OCR 실행 (이미지가 있는 경우)
-    if os.path.exists('assets/images/test_image_3.jpg'):
-        ocr.run_ocr('assets/images/test_image_3.jpg', debug=True)
+    # 테스트 이미지 경로
+    test_images_dir = "assets/images"
+    test_images = ["test_image_3.jpg"]
+    
+    # 각 테스트 이미지에 대해 OCR 수행
+    for img_name in test_images:
+        img_path = os.path.join(test_images_dir, img_name)
+        
+        if os.path.exists(img_path):
+            print(f"\n{'=' * 50}")
+            print(f"Processing: {img_name}")
+            print("=" * 50)
+            
+            # OCR 실행 (debug=True로 시각화 포함)
+            detected_texts = ocr.run_ocr(img_path, debug=True)
+            
+            print(f"\n[Detected Texts in {img_name}]")
+            for i, text in enumerate(detected_texts, 1):
+                print(f"{i}. {text}")
+        else:
+            print(f"\nWarning: {img_path} not found!")
+    
+    print("\n" + "=" * 50)
+    print("OCR Test Completed!")
+    print("=" * 50)
+
+
+if __name__ == "__main__":
+    main()
