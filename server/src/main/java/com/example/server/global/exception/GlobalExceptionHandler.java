@@ -1,11 +1,11 @@
-package com.example.server.global.exception;
+package com.mysite.server.global.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
-import com.example.server.global.common.ErrorResponse;
-import com.example.server.auth.exception.SupabaseAuthException;
+import com.mysite.server.global.common.ErrorResponse;
+import com.mysite.server.auth.exception.SupabaseAuthException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

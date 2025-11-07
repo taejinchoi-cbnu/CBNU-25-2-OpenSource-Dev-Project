@@ -1,4 +1,4 @@
-package com.example.server.global.jwt;
+package com.mysite.server.global.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,6 +1,6 @@
-package com.example.server.global.jwt;
+package com.mysite.server.global.jwt;
 
-import com.example.server.config.SupabaseProperties;
+import com.mysite.server.config.SupabaseProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;

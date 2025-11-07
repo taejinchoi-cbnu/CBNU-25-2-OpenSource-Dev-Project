@@ -1,6 +1,6 @@
-package com.example.server.config;
+package com.mysite.server.config;
 
-import com.example.server.global.jwt.JwtAuthFilter;
+import com.mysite.server.global.jwt.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
