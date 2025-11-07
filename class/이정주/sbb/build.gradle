@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com.example'
+group = 'com.mysite'
 version = '0.0.1-SNAPSHOT'
 description = 'sbb'
 
@@ -20,9 +20,28 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // ✅ 추가
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    runtimeOnly 'com.h2database:h2'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
+
+
+
+/*
+ * 실제 MySQL/PostgreSQL을 쓸 거면 위의 H2 대신 아래 중 하나를 runtimeOnly로 사용:
+ * runtimeOnly 'com.mysql:mysql-connector-j'
+ * runtimeOnly 'org.postgresql:postgresql'
+ */
 
 tasks.named('test') {
     useJUnitPlatform()
