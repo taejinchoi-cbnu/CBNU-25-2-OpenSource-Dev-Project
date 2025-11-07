@@ -1,6 +1,7 @@
 package com.example.server.board.entity;
 
 
+import com.example.server.auth.entity.AuthUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,8 +28,9 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "author_id", nullable = false)
-    private UUID authorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private AuthUser author;
 
     @Column(name = "view_count", nullable = false)
     private Integer viewCount = 0;
@@ -43,4 +45,8 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
+
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
 }

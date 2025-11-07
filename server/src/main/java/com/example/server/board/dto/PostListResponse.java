@@ -19,7 +19,7 @@ public class PostListResponse {
     public PostListResponse(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
-        this.authorId = post.getAuthorId();
+        this.authorId = post.getAuthor().getId();
         this.viewCount = post.getViewCount();
         this.createdAt = post.getCreatedAt();
     }
