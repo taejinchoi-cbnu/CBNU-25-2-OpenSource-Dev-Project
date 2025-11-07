@@ -1,5 +1,6 @@
 package com.example.server.board.entity;
 
+import com.example.server.auth.entity.AuthUser;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,18 +20,16 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
-
-    @Column(name = "post_id", updatable = false, insertable = false)
-    private Long postId;
-
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "author_id", nullable = false)
-    private UUID authorId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private AuthUser author;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
