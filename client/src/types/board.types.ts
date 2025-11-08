@@ -1,3 +1,12 @@
+// 게시글 목록의 각 아이템
+export interface PostListItem {
+  id: number;
+  title: string;
+  authorId: string;
+  viewCount: number;
+  createdAt: string;
+}
+
 // 게시글 상세 정보 응답
 export interface Post {
   id: number;
@@ -11,13 +20,16 @@ export interface Post {
   comments?: Comment[];
 }
 
-// 게시글 목록의 각 아이템
-export interface PostListItem {
-  id: number;
+// 게시글 생성 요청
+export interface PostCreateRequest {
   title: string;
-  authorId: string;
-  viewCount: number;
-  createdAt: string;
+  content: string;
+}
+
+// 게시글 수정 요청
+export interface PostUpdateRequest {
+  title: string;
+  content: string;
 }
 
 // 댓글 응답
@@ -29,18 +41,6 @@ export interface Comment {
   postId: number;
   createdAt: string;
   updatedAt: string;
-}
-
-// 게시글 생성 요청
-export interface PostCreateRequest {
-  title: string;
-  content: string;
-}
-
-// 게시글 수정 요청
-export interface PostUpdateRequest {
-  title: string;
-  content: string;
 }
 
 // 댓글 생성 요청
