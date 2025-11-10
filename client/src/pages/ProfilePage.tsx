@@ -57,7 +57,7 @@ function ProfilePage() {
           <button type="submit">변경하기</button>
         </form>
       </section>
-
+      {/* JSON raw로 보여주는거 정제하기 ex) postId로 게시글 이름 가져와서 댓글과 매핑해서 보여주기 */}
       <section>
         <h2>작성한 게시글 ({profile?.posts?.length || 0}개)</h2>
         <pre>{JSON.stringify(profile?.posts, null, 2)}</pre>
