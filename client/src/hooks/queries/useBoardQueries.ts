@@ -1,14 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { boardService } from "../../api/boardService";
 import type { Pageable } from "../../types/common.types";
-import type {
-  PostCreateRequest,
-  PostUpdateRequest,
-  CommentCreateRequest,
-  CommentUpdateRequest,
+import {
+  type Post,
+  type PostCreateRequest,
+  type PostUpdateRequest,
+  type CommentCreateRequest,
+  type CommentUpdateRequest,
 } from "../../types/board.types";
+import { userKeys } from "./useUserQueries";
 
-// Query Keys
+// 쿼리 키
 const boardQueryKeys = {
   all: ["board"] as const,
   posts: (pageable: Pageable) => ["posts", pageable] as const,
@@ -39,10 +41,11 @@ export const useGetPost = (postId: number | undefined) => {
 // 게시글 생성
 export const useCreatePost = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutation<Post, Error, PostCreateRequest>({
     mutationFn: (data: PostCreateRequest) => boardService.createPost(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: userKeys.profile() });
     },
   });
 };
@@ -50,7 +53,7 @@ export const useCreatePost = () => {
 // 게시글 수정
 export const useUpdatePost = () => {
   const queryClient = useQueryClient();
-  return useMutation({
+  return useMutation<Post, Error, { postId: number; data: PostUpdateRequest }>({
     mutationFn: ({
       postId,
       data,
@@ -89,6 +92,7 @@ export const useCreateComment = () => {
     }) => boardService.createComment({ postId, data }),
     onSuccess: (_, { postId }) => {
       queryClient.invalidateQueries({ queryKey: boardQueryKeys.post(postId) });
+      queryClient.invalidateQueries({ queryKey: userKeys.profile() });
     },
   });
 };

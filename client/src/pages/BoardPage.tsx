@@ -18,6 +18,7 @@ const BoardPage = () => {
 
   useEffect(() => {
     if (isError) {
+      // TODO: 403 이면 비로그인 상태라 이거 처리해야함
       toast.error(`게시글 목록을 불러오는 데 실패했습니다: ${error.message}`);
     }
   }, [isError, error]);

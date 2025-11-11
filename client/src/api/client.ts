@@ -3,7 +3,7 @@ import { useAuthStore } from "../store/authStore";
 
 // API 요청을 위한 기본 Axios 인스턴스
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.PROD ? "/api" : import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });
 

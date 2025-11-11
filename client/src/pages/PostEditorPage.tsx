@@ -29,11 +29,15 @@ const PostEditorPage = () => {
   const { mutate: createPost, isPending: isCreating } = useCreatePost();
   const { mutate: updatePost, isPending: isUpdating } = useUpdatePost();
 
-  // 수정 모드 데이터 로딩이 완료되면 폼에 값을 채움
+  // 사용자가 URL 변경하는 경우 에러 핸들링 추가
+  // 수정 모드 데이터 로딩이 완료되면 폼에 값을 채우고, 생성 모드로 전환될 경우 폼을 초기화
   useEffect(() => {
     if (isEditMode && post) {
       setTitle(post.title);
       setContent(post.content);
+    } else if (!isEditMode) {
+      setTitle("");
+      setContent("");
     }
   }, [isEditMode, post]);
 
@@ -111,8 +115,8 @@ const PostEditorPage = () => {
           {isCreating || isUpdating
             ? "저장 중..."
             : isEditMode
-            ? "수정하기"
-            : "작성하기"}
+              ? "수정하기"
+              : "작성하기"}
         </button>
       </form>
     </div>
