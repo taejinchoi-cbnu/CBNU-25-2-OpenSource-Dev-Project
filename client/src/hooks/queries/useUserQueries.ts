@@ -3,7 +3,7 @@ import { getMyProfile, updateMyProfile } from "../../api/userService";
 import { type ProfileUpdateRequest } from "../../types/user.types";
 import { toast } from "react-toastify";
 
-const userKeys = {
+export const userKeys = {
   all: ["user"] as const,
   profile: () => [...userKeys.all, "profile"] as const,
 };

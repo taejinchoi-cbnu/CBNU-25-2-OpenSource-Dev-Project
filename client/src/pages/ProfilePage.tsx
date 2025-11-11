@@ -19,7 +19,15 @@ function ProfilePage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (nickname.trim()) {
-      updateNickname({ nickname });
+      updateNickname(
+        { nickname },
+        {
+          onSuccess: () => {
+            // 성공 시 브라우저 새로고침
+            window.location.reload();
+          },
+        }
+      );
     }
   };
 
