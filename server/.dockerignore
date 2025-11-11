@@ -1,0 +1,17 @@
+# Git and IDE files
+.git
+.gitignore
+.idea
+.gradle
+
+# Gradle files
+build/
+.gradletasknamecache
+*gradle-wrapper.jar
+
+# Log files
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
