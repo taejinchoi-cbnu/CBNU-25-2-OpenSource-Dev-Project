@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import {
   useUserProfile,
   useUpdateProfile,
 } from "../hooks/queries/useUserQueries";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { AxiosError } from "axios";
 
 function ProfilePage() {
   const { data: profile, isLoading, isError, error } = useUserProfile();
-  const { mutate: updateNickname } = useUpdateProfile();
+  const { mutate: updateNickname, isPending: isUpdating } = useUpdateProfile();
   const [nickname, setNickname] = useState("");
 
   useEffect(() => {
@@ -18,17 +20,37 @@ function ProfilePage() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (nickname.trim()) {
-      updateNickname(
-        { nickname },
-        {
-          onSuccess: () => {
-            // 성공 시 브라우저 새로고침
-            window.location.reload();
-          },
-        }
-      );
+    const trimmedNickname = nickname.trim();
+
+    // 공백 입력 방지 추가
+    if (!trimmedNickname) {
+      toast.error("닉네임은 비워둘 수 없습니다.");
+      return;
     }
+
+    // 같은 닉네임 변경 방지 추가
+    if (trimmedNickname === profile?.nickname) {
+      toast.info("현재 닉네임과 동일합니다.");
+      return;
+    }
+
+    updateNickname(
+      { nickname: trimmedNickname },
+      {
+        onSuccess: () => {
+          toast.success("닉네임이 성공적으로 변경되었습니다.");
+          // 성공 시 브라우저 새로고침으로 상태 반영
+          window.location.reload();
+        },
+        onError: (error: Error) => {
+          let message = "닉네임 변경에 실패했습니다.";
+          if (error instanceof AxiosError) {
+            message = error.response?.data?.message || message;
+          }
+          toast.error(message);
+        },
+      }
+    );
   };
 
   if (isLoading) {
@@ -61,8 +83,11 @@ function ProfilePage() {
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             placeholder="새 닉네임"
+            disabled={isUpdating}
           />
-          <button type="submit">변경하기</button>
+          <button type="submit" disabled={isUpdating}>
+            {isUpdating ? "변경 중..." : "변경하기"}
+          </button>
         </form>
       </section>
       {/* JSON raw로 보여주는거 정제하기 ex) postId로 게시글 이름 가져와서 댓글과 매핑해서 보여주기 */}
