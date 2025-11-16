@@ -5,6 +5,7 @@ import { authService } from "../api/authService";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { SsgoiTransition } from "@ssgoi/react";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -35,34 +36,36 @@ function LoginPage() {
   };
 
   return (
-    <div>
-      <h1>로그인</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">이메일</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">비밀번호</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loginMutation.isPending}>
-          {loginMutation.isPending ? "로그인 중..." : "로그인"}
-        </button>
-      </form>
-    </div>
+    <SsgoiTransition id="/login">
+      <div>
+        <h1>로그인</h1>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="email">이메일</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password">비밀번호</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" disabled={loginMutation.isPending}>
+            {loginMutation.isPending ? "로그인 중..." : "로그인"}
+          </button>
+        </form>
+      </div>
+    </SsgoiTransition>
   );
 }
 
