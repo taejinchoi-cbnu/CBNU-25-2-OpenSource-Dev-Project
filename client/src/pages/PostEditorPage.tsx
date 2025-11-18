@@ -127,4 +127,3 @@ const PostEditorPage = () => {
 };
 
 export default PostEditorPage;
-
