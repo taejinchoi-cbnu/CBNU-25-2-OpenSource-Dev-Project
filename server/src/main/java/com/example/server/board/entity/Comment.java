@@ -8,10 +8,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "comments")  // 댓글 저장 테이블 이름
 @Getter
 @Setter
 public class Comment {
@@ -20,10 +19,10 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    @Column(nullable = false, columnDefinition = "TEXT") // 댓글 내용, Text 타입 사용, nullable = false : 내용 없으면 false
+    private String content; // 길이 제한 없는 문자열 저장 가능
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // 댓글 작성자와 다대일
     @JoinColumn(name = "author_id", nullable = false)
     private AuthUser author;
 
@@ -31,11 +30,12 @@ public class Comment {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @CreationTimestamp
+
+    @CreationTimestamp // 생성시간
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
-    @UpdateTimestamp
+    @UpdateTimestamp // 수정시간
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 }

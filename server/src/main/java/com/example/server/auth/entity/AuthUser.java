@@ -1,3 +1,7 @@
+/*
+닉네임이 없는 경우
+ */
+
 package com.example.server.auth.entity;
 
 import com.example.server.board.entity.Comment;
