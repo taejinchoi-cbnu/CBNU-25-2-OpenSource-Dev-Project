@@ -44,7 +44,11 @@ function AuthInitializer({ children }: AuthInitializerProps) {
   const globalIsLoading = useAuthStore((state) => state.isLoading);
 
   if (globalIsLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white/80 z-50">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return <>{children}</>;
