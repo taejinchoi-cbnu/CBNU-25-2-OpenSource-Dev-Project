@@ -32,9 +32,6 @@ function AuthInitializer({ children }: AuthInitializerProps) {
     if (!isPending) {
       // 쿼리가 더 이상 pending 상태가 아닐 때
       if (isError) {
-        if (!(error instanceof AxiosError && error.response?.status === 403)) {
-          console.error("Silent refresh failed:", error);
-        }
         clearAuth();
       } else if (data) {
         setUserToken(data);
