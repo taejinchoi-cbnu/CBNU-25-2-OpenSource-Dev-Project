@@ -42,7 +42,8 @@
 ├── 📁 api/                    // API 통신 관련 모듈
 │   ├── 📄 client.ts           // Axios 인스턴스 및 인터셉터 설정
 │   ├── 📄 authService.ts       // 인증 관련 API 호출 함수
-│   └── 📄 boardService.ts      // 게시판 관련 API 호출 함수
+│   ├── 📄 boardService.ts      // 게시판 관련 API 호출 함수
+│   └── 📄 userService.ts       // 사용자 관련 API 호출 함수
 │
 ├── 📁 assets/
 │   └── 📄 .gitkeep
@@ -56,7 +57,8 @@
 ├── 📁 hooks/                  // 커스텀 훅
 │   ├── 📄 useLoading.ts        // 비동기 작업 로딩 상태 관리 (현재는 사용되지 않음)
 │   └── 📁 queries/
-│       └── 📄 useBoardQueries.ts // 게시판 관련 React-Query 훅
+│       ├── 📄 useBoardQueries.ts // 게시판 관련 React-Query 훅
+│       └── 📄 useUserQueries.ts  // 사용자 관련 React-Query 훅
 │
 ├── 📁 layouts/
 │   └── 📄 .gitkeep
@@ -81,7 +83,8 @@
 ├── 📁 types/                  // 전역 타입 정의
 │   ├── 📄 auth.types.ts
 │   ├── 📄 board.types.ts
-│   └── 📄 common.types.ts
+│   ├── 📄 common.types.ts
+│   └── 📄 user.types.ts        // 사용자 관련 타입 정의
 │
 └── 📁 utils/
     └── 📄 .gitkeep
@@ -141,7 +144,35 @@
 
 ---
 
-# 개발 진행 상황 및 다음 단계
+## 5. Docker 기반 환경 구성 (Containerization)
+
+프로젝트의 일관성, 이식성, 확장성을 보장하기 위해 Docker를 사용하여 전체 애플리케이션 스택을 컨테이너화합니다. 이를 통해 어떤 환경에서든 동일하게 애플리케이션을 실행하고, 신규 개발자의 온보딩 과정을 단순화하며, 배포 프로세스를 자동화합니다.
+
+### `Dockerfile` (운영용)
+
+- **목표**: 최종 배포를 위한 최적화된 정적 파일 서빙용 Nginx 이미지를 생성합니다.
+- **프로세스**: Multi-stage 빌드를 활용합니다.
+  1.  **Build Stage**: `node:20-alpine` 이미지에서 `npm run build`를 실행하여 React 애플리케이션을 빌드하고 `dist` 디렉토리를 생성합니다.
+  2.  **Production Stage**: `nginx:stable-alpine` 이미지에 위에서 생성된 `dist` 디렉토리와 커스텀 `nginx.conf` 파일만 복사하여 최종 이미지 크기를 최소화합니다.
+
+### `nginx.conf`
+
+- Nginx 웹 서버의 설정 파일로, 두 가지 핵심 역할을 수행합니다.
+  1.  **SPA 라우팅 처리**: `try_files $uri $uri/ /index.html;` 설정을 통해 React Router와 같은 클라이언트 사이드 라우터가 정상적으로 동작하도록 모든 경로 요청을 `index.html`로 귀결시킵니다.
+  2.  **API 리버스 프록시**: `location /api/` 블록을 통해 `/api`로 시작하는 모든 요청을 백엔드 서버 컨테이너(`http://server:8080`)로 전달합니다. 이를 통해 클라이언트-서버 간 CORS 문제를 원천적으로 해결합니다.
+
+### `.dockerignore`
+
+- Docker 이미지를 빌드할 때 `node_modules`, `.git` 등 불필요하거나 민감한 파일 및 디렉토리가 빌드 컨텍스트에 포함되지 않도록 제외합니다. 이를 통해 빌드 속도를 향상시키고 이미지 용량을 최적화하며 보안을 강화합니다.
+
+### `Dockerfile.dev` 및 `docker-compose.override.yml` (심화: Docker-First 워크플로우)
+
+- **`Dockerfile.dev`**: 개발 단계에서 핫 리로딩을 지원하기 위해 `npm run dev` 명령어를 실행하는 Vite 개발 서버용 Dockerfile입니다.
+- **`docker-compose.override.yml`**: `docker-compose up` 실행 시 `docker-compose.yml`에 덧씌워지는 개발 전용 설정 파일입니다. Docker 볼륨을 사용하여 로컬 소스코드와 컨테이너 내부를 실시간으로 동기화하고, Vite 개발 서버 포트(5173)를 노출하는 등의 역할을 수행하여 컨테이너 환경 내에서 핫 리로딩을 가능하게 합니다.
+
+---
+
+## 6. 개발 진행 상황 및 다음 단계
 
 ## 완료된 작업
 
@@ -160,17 +191,38 @@
   - 게시글 목록 조회, 상세 조회, 작성, 수정, 삭제 API 연동 및 UI 구현.
   - TanStack Query의 `useQuery`와 `useMutation`을 활용한 서버 상태 관리.
   - 네비게이션 바에 '홈', '게시판' 버튼 추가.
+- **프로필 기능 구현**:
+  - 사용자 프로필 조회 및 수정 API 연동.
+  - `ProfilePage.tsx`에 UI 및 기능 구현 (연결 테스트 목적).
+  - `userService.ts`를 통한 API 호출 로직 구현.
+  - `useUserQueries.ts`를 통한 React Query 훅 구현.
+- **Docker 환경 구축**:
+  - Client(React+Nginx), Server(Spring Boot) 애플리케이션의 Dockerfile 및 .dockerignore 작성.
+  - `docker-compose.yml`을 통한 컨테이너 오케스트레이션 환경 구성.
+  - Docker 환경에서의 API 경로 및 CORS 문제 해결.
 
 ## 다음 작업 계획
 
-1.  **프로필 페이지 구현 (`feature/profile`):**
-    - **목표**: 사용자가 자신의 정보를 확인하고 수정할 수 있는 페이지를 구현합니다.
-    - **작업 내용**:
-      - 사용자 정보 조회 및 수정 API 연동.
-      - `ProfilePage.tsx`에 UI 및 기능 구현.
+1.  **이미지 분석 기능 구현 (`feature/image-analysis`)**
+    - **목표**: 사용자가 성적표 이미지를 업로드하고, 서버로부터 분석 결과를 받아 시각화된 형태로 확인할 수 있는 기능을 구현합니다.
 
-2.  **이미지 처리 기능 구현 (`feature/image-processing`):**
-    - **목표**: 서버와 연동하여 성적 분석 결과를 시각화하는 핵심 기능을 구현합니다.
-    - **작업 내용**:
-      - 이미지 업로드 및 결과 조회 API 연동.
-      - 관련 UI/UX 구현.
+    - **주요 작업**:
+      1.  **신규 페이지 및 라우팅**:
+          - 이미지 업로드와 결과 확인을 위한 `pages/ImageAnalysisPage.tsx` 페이지 컴포넌트를 생성합니다.
+
+          - `App.tsx`에 `/grades/analyze` 와 같은 경로를 추가하여 위 페이지로 연결합니다.
+
+      2.  **API 연동 모듈**:
+          - `api/imageService.ts` 파일을 생성하고, 서버의 `/api/images/analyze` 엔드포인트로 `multipart/form-data` 요청을 보내는 API 호출 함수를 작성합니다.
+
+      3.  **커스텀 쿼리 훅**:
+          - `hooks/queries/useImageQueries.ts` 파일을 생성합니다.
+
+          - `useMutation`을 사용하여 이미지 분석 API 요청의 상태(로딩, 성공, 에러)를 관리하는 `useImageAnalysis` 훅을 구현합니다.
+
+      4.  **UI 컴포넌트**:
+          - **파일 업로드**: 사용자가 이미지 파일을 선택하고 업로드할 수 있는 UI를 구현합니다. (완료)
+          - **클라이언트 유효성 검사**: 업로드 전, 파일이 허용된 형식(`jpeg`, `png`, `gif`, `webp`)과 크기(최대 5MB)를 만족하는지 검사하고, 조건에 맞지 않으면 `react-toastify`를 통해 즉시 에러 메시지를 표시합니다. (완료)
+          - **결과 시각화**: `useImageAnalysis` 훅으로부터 받은 서버의 분석 결과(JSON)를 차트나 테이블 형태로 표시하는 `components/AnalysisResult.tsx`와 같은 컴포넌트를 개발합니다. (진행중)
+
+      5.  **네비게이션**: `Navbar.tsx`에 '성적 분석'과 같이 새로 만든 페이지로 이동하는 링크를 추가합니다.

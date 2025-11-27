@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { authService } from "../api/authService";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
+import { SsgoiTransition } from "@ssgoi/react";
 
 function SignupPage() {
   const [email, setEmail] = useState("");
@@ -34,44 +35,46 @@ function SignupPage() {
   };
 
   return (
-    <div>
-      <h1>회원가입</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">이메일</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">비밀번호</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="nickname">닉네임</label>
-          <input
-            id="nickname"
-            type="text"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={signupMutation.isPending}>
-          {signupMutation.isPending ? "회원가입 중..." : "회원가입"}
-        </button>
-      </form>
-    </div>
+    <SsgoiTransition id="/signup">
+      <div>
+        <h1>회원가입</h1>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="email">이메일</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password">비밀번호</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="nickname">닉네임</label>
+            <input
+              id="nickname"
+              type="text"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" disabled={signupMutation.isPending}>
+            {signupMutation.isPending ? "회원가입 중..." : "회원가입"}
+          </button>
+        </form>
+      </div>
+    </SsgoiTransition>
   );
 }
 

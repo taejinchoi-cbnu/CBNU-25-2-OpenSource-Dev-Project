@@ -7,6 +7,7 @@ import {
 } from "../hooks/queries/useBoardQueries";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { toast } from "react-toastify";
+import { SsgoiTransition } from "@ssgoi/react";
 
 const PostEditorPage = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -77,49 +78,51 @@ const PostEditorPage = () => {
     return <div>게시글을 불러오는 데 실패했습니다.</div>;
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
-      <h2>{isEditMode ? "게시글 수정" : "새 게시글 작성"}</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "15px" }}>
-          <label
-            htmlFor="title"
-            style={{ display: "block", marginBottom: "5px" }}
-          >
-            제목
-          </label>
-          <input
-            id="title"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px" }}
-          />
-        </div>
-        <div style={{ marginBottom: "15px" }}>
-          <label
-            htmlFor="content"
-            style={{ display: "block", marginBottom: "5px" }}
-          >
-            내용
-          </label>
-          <textarea
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px", minHeight: "300px" }}
-          />
-        </div>
-        <button type="submit" disabled={isCreating || isUpdating}>
-          {isCreating || isUpdating
-            ? "저장 중..."
-            : isEditMode
-              ? "수정하기"
-              : "작성하기"}
-        </button>
-      </form>
-    </div>
+    <SsgoiTransition id="/board/editor">
+      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
+        <h2>{isEditMode ? "게시글 수정" : "새 게시글 작성"}</h2>
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: "15px" }}>
+            <label
+              htmlFor="title"
+              style={{ display: "block", marginBottom: "5px" }}
+            >
+              제목
+            </label>
+            <input
+              id="title"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              style={{ width: "100%", padding: "8px" }}
+            />
+          </div>
+          <div style={{ marginBottom: "15px" }}>
+            <label
+              htmlFor="content"
+              style={{ display: "block", marginBottom: "5px" }}
+            >
+              내용
+            </label>
+            <textarea
+              id="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              required
+              style={{ width: "100%", padding: "8px", minHeight: "300px" }}
+            />
+          </div>
+          <button type="submit" disabled={isCreating || isUpdating}>
+            {isCreating || isUpdating
+              ? "저장 중..."
+              : isEditMode
+                ? "수정하기"
+                : "작성하기"}
+          </button>
+        </form>
+      </div>
+    </SsgoiTransition>
   );
 };
 
