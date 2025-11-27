@@ -1,4 +1,5 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
+import { Ssgoi } from "@ssgoi/react";
 import "./App.css";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
@@ -9,22 +10,41 @@ import BoardPage from "./pages/BoardPage";
 import ProfilePage from "./pages/ProfilePage";
 import PostDetailPage from "./pages/PostDetailPage";
 import PostEditorPage from "./pages/PostEditorPage";
+import ImageAnalysisPage from "./pages/ImageAnalysisPage";
+import ImageResultPage from "./pages/ImageResultPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Ssgoi } from "@ssgoi/react";
-import { fade } from "@ssgoi/react/view-transitions";
-
 import LandingPage from "./pages/LandingPage";
 
 function App() {
+  const location = useLocation();
+
+  const ssgoiConfig = {
+    default: {
+      enter: {
+        opacity: [0, 1],
+        transform: ["translateY(20px)", "translateY(0)"],
+        duration: 500,
+        easing: "ease-out",
+      },
+      exit: {
+        opacity: [1, 0],
+        transform: ["translateY(0)", "translateY(-20px)"],
+        duration: 300,
+        easing: "ease-in",
+      },
+    },
+  };
+
   return (
     <AuthInitializer>
-      <Ssgoi config={{ defaultTransition: fade() }}>
-        <div style={{ position: "relative", minHeight: "100vh" }}>
-          <ToastContainer />
-          <Navbar />
-          <main>
-            <Routes>
+      <div className="min-h-screen bg-gray-50">
+        <ToastContainer position="top-right" autoClose={3000} />
+        <Navbar />
+        <main className="pt-20">
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          <Ssgoi config={ssgoiConfig as any}>
+            <Routes location={location} key={location.pathname}>
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
@@ -54,10 +74,13 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/gradeAnalyze" element={<ImageAnalysisPage />} />
+              <Route path="/grades/analyze" element={<ImageAnalysisPage />} />
+              <Route path="/grades/result" element={<ImageResultPage />} />
             </Routes>
-          </main>
-        </div>
-      </Ssgoi>
+          </Ssgoi>
+        </main>
+      </div>
     </AuthInitializer>
   );
 }
