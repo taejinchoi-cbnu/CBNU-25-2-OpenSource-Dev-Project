@@ -17,10 +17,11 @@ export interface UserPostSummary {
 export interface UserCommentSummary {
   postId: number;
   content: string;
+  postTitle: string;
   createdAt: string;
 }
 
-// 사용자 정보 업데이트는 닉네임만 가능하게!
+// 사용자 정보 업데이트 (닉네임만 가능)
 export interface ProfileUpdateRequest {
   nickname: string;
 }
