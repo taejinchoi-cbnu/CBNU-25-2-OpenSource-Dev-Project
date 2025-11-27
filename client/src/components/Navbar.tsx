@@ -1,138 +1,96 @@
-import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { authService } from "../api/authService";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
+import logo from "../assets/logo.png";
 
 function Navbar() {
-  const { accessToken, clearAuth } = useAuthStore();
+  const { user, clearAuth } = useAuthStore();
   const navigate = useNavigate();
 
-  const logoutMutation = useMutation({
-    mutationFn: authService.logout,
-    onSuccess: () => {
-      clearAuth(); // Zustand 스토어에서 인증 상태 초기화
-      navigate("/login"); // 로그아웃 후 로그인 페이지로 이동
-    },
-    onError: (error) => {
-      console.error("로그아웃 실패:", error);
-      let errorMsg = "다시 시도해주세요";
+  const handleLogout = async () => {
+    try {
+      await authService.logout();
+      clearAuth();
+      toast.success("로그아웃되었습니다.");
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
       if (error instanceof AxiosError) {
-        errorMsg = error.response?.data?.message || errorMsg;
+        toast.error(`로그아웃 실패: ${error.response?.data?.message || "오류가 발생했습니다."}`);
       }
-      toast.error(`로그아웃 실패: ${errorMsg}`);
-    },
-  });
-
-  const handleLogout = () => {
-    logoutMutation.mutate();
-  };
-
-  const handleLogin = () => {
-    navigate("/login");
-  };
-
-  const handleSignup = () => {
-    navigate("/signup");
-  };
-
-  const handleHome = () => {
-    navigate("/");
-  };
-
-  const handleBoard = () => {
-    navigate("/board");
+    }
   };
 
   return (
-    <nav
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "10px 20px",
-        borderBottom: "1px solid #ccc",
-      }}
-    >
-      <div>
-        <button
-          onClick={handleHome}
-          style={{
-            padding: "8px 15px",
-            marginRight: "10px",
-            cursor: "pointer",
-            backgroundColor: "#6c757d",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-          }}
-        >
-          홈
-        </button>
-        <button
-          onClick={handleBoard}
-          style={{
-            padding: "8px 15px",
-            marginRight: "10px",
-            cursor: "pointer",
-            backgroundColor: "#17a2b8",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-          }}
-        >
-          게시판
-        </button>
-      </div>
-      <div>
-        {accessToken ? (
-          <button
-            onClick={handleLogout}
-            disabled={logoutMutation.isPending}
-            style={{
-              padding: "8px 15px",
-              marginRight: "10px",
-              cursor: "pointer",
-              backgroundColor: logoutMutation.isPending ? "#ccc" : "#dc3545",
-              color: "white",
-              border: "none",
-              borderRadius: "5px",
-            }}
-          >
-            {logoutMutation.isPending ? "로그아웃 중..." : "로그아웃"}
-          </button>
-        ) : (
-          <>
-            <button
-              onClick={handleLogin}
-              style={{
-                padding: "8px 15px",
-                marginRight: "10px",
-                cursor: "pointer",
-                backgroundColor: "#007bff",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-              }}
-            >
-              로그인
-            </button>
-            <button
-              onClick={handleSignup}
-              style={{
-                padding: "8px 15px",
-                cursor: "pointer",
-                backgroundColor: "#28a745",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-              }}
-            >
-              회원가입
-            </button>
-          </>
-        )}
+    <nav className="fixed top-0 left-0 right-0 z-50 glass h-21 transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className="flex justify-between items-center h-full">
+          <div className="flex items-center gap-9">
+            <Link to="/" className="flex items-center gap-2 group">
+              <img src={logo} alt="Logo" className="w-15 h-15 object-contain" />
+              <span className="text-2xl font-bold text-[var(--color-primary)] tracking-tight group-hover:text-[var(--color-secondary)] transition-colors">
+                What&apos;s Your GPA
+              </span>
+            </Link>
+
+            <div className="hidden md:flex items-center gap-10">
+              <Link
+                to="/"
+                className="text-xl text-[var(--color-primary)] hover:text-[var(--color-secondary)] font-light transition-colors"
+              >
+                홈
+              </Link>
+              <Link
+                to="/grades/analyze"
+                className="text-xl text-[var(--color-primary)] hover:text-[var(--color-secondary)] font-light transition-colors"
+              >
+                성적표 분석
+              </Link>
+              <Link
+                to="/board"
+                className="text-xl text-[var(--color-primary)] hover:text-[var(--color-secondary)] font-light transition-colors"
+              >
+                게시판
+              </Link>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-8">
+            {user ? (
+              <>
+                <Link
+                  to="/profile"
+                  className="text-xl text-[var(--color-primary)] hover:text-[var(--color-secondary)] font-light transition-colors"
+                >
+                  프로필
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="text-xl text-[var(--color-primary)] hover:text-[var(--color-secondary)] font-light transition-colors"
+                >
+                  로그아웃
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-lg text-[var(--color-primary)] hover:text-[var(--color-secondary)] font-medium transition-colors"
+                >
+                  로그인
+                </Link>
+                <Link
+                  to="/signup"
+                  className="text-lg text-[var(--color-primary)] hover:text-[var(--color-secondary)] font-medium transition-colors"
+                >
+                  회원가입
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </nav>
   );
