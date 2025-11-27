@@ -1,3 +1,4 @@
+
 // 환경변수 접근을 위한 유틸리티 객체
 export const env = {
   // 개발 환경 여부 확인
@@ -56,20 +57,24 @@ export const validateEnv = () => {
 export const log = {
   debug: (...args) => {
     if (env.isDevelopment || env.features.enableDebugMode) {
+      // eslint-disable-next-line no-console
       console.log("[DEBUG]", ...args);
     }
   },
   info: (...args) => {
     if (!env.isTest) {
+      // eslint-disable-next-line no-console
       console.info("[INFO]", ...args);
     }
   },
   warn: (...args) => {
     if (!env.isTest) {
+      // eslint-disable-next-line no-console
       console.warn("[WARN]", ...args);
     }
   },
   error: (...args) => {
+    // eslint-disable-next-line no-console
     console.error("[ERROR]", ...args);
   },
 };
