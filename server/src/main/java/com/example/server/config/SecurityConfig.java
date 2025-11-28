@@ -35,7 +35,7 @@ public class SecurityConfig {
                 // API 경로별 접근 권한 설정
                 // swagger 추가
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/images/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                         .anyRequest().authenticated() // 그 외 나머지 모든 요청은 인증 필요
                 )
 
