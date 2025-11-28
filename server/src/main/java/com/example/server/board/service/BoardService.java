@@ -15,11 +15,10 @@ import com.example.server.board.exception.NoPermissionException;
 import com.example.server.board.exception.PostNotFoundException;
 import com.example.server.board.repository.CommentRepository;
 import com.example.server.board.repository.PostRepository;
+import com.example.server.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +37,10 @@ public class BoardService {
 
     @Transactional
     public PostResponse getPostByPostId(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
-        post.increaseViewCount(); // TODO: viewCount는 나중에 수정
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+        // TODO: 동시성 문제를 해결하기 위해 추후 Redis나 Atomic Update 쿼리로 개선해야함
+        post.increaseViewCount();
 
         List<CommentResponse> commentResponses = post.getComments().stream()
                 .map(CommentResponse::new)
@@ -57,9 +58,9 @@ public class BoardService {
 
     @Transactional
     public PostResponse createPost(PostCreateRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UUID authorId = UUID.fromString(authentication.getName());
-        AuthUser author = authUserRepository.findById(authorId).orElseThrow(() -> new RuntimeException("Author not found"));
+        UUID authorId = SecurityUtil.getCurrentUserId();
+        AuthUser author = authUserRepository.findById(authorId)
+                .orElseThrow(() -> new RuntimeException("Author not found"));
 
         Post post = new Post();
         post.setTitle(request.getTitle());
@@ -71,10 +72,10 @@ public class BoardService {
 
     @Transactional
     public PostResponse updatePost(Long postId, PostUpdateRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UUID currentUserId = UUID.fromString(authentication.getName());
+        UUID currentUserId = SecurityUtil.getCurrentUserId();
 
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
 
         if (!post.getAuthor().getId().equals(currentUserId)) {
             throw new NoPermissionException("이 게시글을 수정할 권한이 없습니다.");
@@ -87,10 +88,10 @@ public class BoardService {
 
     @Transactional
     public void deletePost(Long postId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UUID currentUserId = UUID.fromString(authentication.getName());
+        UUID currentUserId = SecurityUtil.getCurrentUserId();
 
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
 
         if (!post.getAuthor().getId().equals(currentUserId)) {
             throw new NoPermissionException("이 게시글을 삭제할 권한이 없습니다.");
@@ -103,11 +104,12 @@ public class BoardService {
 
     @Transactional
     public CommentResponse createComment(Long postId, CommentCreateRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UUID authorId = UUID.fromString(authentication.getName());
-        AuthUser author = authUserRepository.findById(authorId).orElseThrow(() -> new RuntimeException("Author not found"));
+        UUID authorId = SecurityUtil.getCurrentUserId();
+        AuthUser author = authUserRepository.findById(authorId)
+                .orElseThrow(() -> new RuntimeException("Author not found"));
 
-        Post post = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("Post not found with id: " + postId));
         Comment comment = new Comment();
         comment.setPost(post);
         comment.setContent(request.getContent());
@@ -118,10 +120,10 @@ public class BoardService {
 
     @Transactional
     public CommentResponse updateComment(Long postId, Long commentId, CommentUpdateRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UUID currentUserId = UUID.fromString(authentication.getName());
+        UUID currentUserId = SecurityUtil.getCurrentUserId();
 
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentNotFoundException("Comment not found with id: " + commentId));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("Comment not found with id: " + commentId));
 
         if (!comment.getAuthor().getId().equals(currentUserId)) {
             throw new NoPermissionException("이 댓글을 수정할 권한이 없습니다.");
@@ -133,10 +135,10 @@ public class BoardService {
 
     @Transactional
     public void deleteComment(Long postId, Long commentId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UUID currentUserId = UUID.fromString(authentication.getName());
+        UUID currentUserId = SecurityUtil.getCurrentUserId();
 
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new CommentNotFoundException("Comment not found with id: " + commentId));
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("Comment not found with id: " + commentId));
 
         if (!comment.getAuthor().getId().equals(currentUserId)) {
             throw new NoPermissionException("이 댓글을 삭제할 권한이 없습니다.");

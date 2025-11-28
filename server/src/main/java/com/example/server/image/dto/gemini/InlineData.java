@@ -8,7 +8,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GeminiGenerationConfig {
-    @JsonProperty("response_mime_type")
-    private String responseMimeType;
+public class InlineData {
+    @JsonProperty("mime_type") // API 스펙: mime_type
+    private String mimeType;
+
+    @JsonProperty("data")
+    private String data;
 }

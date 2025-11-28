@@ -11,12 +11,14 @@ import java.time.OffsetDateTime;
 public class CommentSummary {
     private Long postId;
     private String content;
+    private String postTitle;
     private OffsetDateTime createdAt;
 
     public static CommentSummary from(Comment comment) {
         return CommentSummary.builder()
                 .postId(comment.getPost().getId())
                 .content(comment.getContent())
+                .postTitle(comment.getPost().getTitle())
                 .createdAt(comment.getCreatedAt())
                 .build();
     }

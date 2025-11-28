@@ -1,6 +1,5 @@
 package com.example.server.board.entity;
 
-
 import com.example.server.auth.entity.AuthUser;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,8 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(name = "posts")
@@ -44,7 +43,7 @@ public class Post {
     private OffsetDateTime updatedAt;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
     public void increaseViewCount() {
         this.viewCount++;

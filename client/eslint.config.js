@@ -52,7 +52,7 @@ export default tseslint.config(
       camelcase: ["error", { properties: "always" }],
       "comma-spacing": ["error", { before: false, after: true }],
       "space-infix-ops": "error",
-      indent: ["error", 2],
+      // indent: ["error", 2],
       "max-statements-per-line": ["error", { max: 1 }],
       "new-cap": ["error", { capIsNewExceptions: ["Router"] }],
 

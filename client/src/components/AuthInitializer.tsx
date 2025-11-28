@@ -32,9 +32,6 @@ function AuthInitializer({ children }: AuthInitializerProps) {
     if (!isPending) {
       // 쿼리가 더 이상 pending 상태가 아닐 때
       if (isError) {
-        if (!(error instanceof AxiosError && error.response?.status === 403)) {
-          console.error("Silent refresh failed:", error);
-        }
         clearAuth();
       } else if (data) {
         setUserToken(data);
@@ -47,7 +44,11 @@ function AuthInitializer({ children }: AuthInitializerProps) {
   const globalIsLoading = useAuthStore((state) => state.isLoading);
 
   if (globalIsLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white/80 z-50">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return <>{children}</>;

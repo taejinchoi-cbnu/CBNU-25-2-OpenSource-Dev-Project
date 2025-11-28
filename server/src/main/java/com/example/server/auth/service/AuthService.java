@@ -85,8 +85,13 @@ public class AuthService {
                 errorMessage = jsonNode.get("message").asText();
             }
         } catch (IOException e) {
-            // 에러 메시지 파싱에 실패하면 기본 메시지 사용
+            // 에러 메시지 파싱에 실패하면 기본 메시지 사용하고 로그 남김
+            System.err.println("Failed to parse Supabase error response: " + e.getMessage());
         }
+
+        // 상세 에러 로그 출력 (운영 환경에서는 로거 사용 권장)
+        System.err.println("Supabase Error: " + ex.getStatusCode() + " - " + responseBody);
+
         return new SupabaseAuthException(errorMessage, ex.getStatusCode());
     }
 }

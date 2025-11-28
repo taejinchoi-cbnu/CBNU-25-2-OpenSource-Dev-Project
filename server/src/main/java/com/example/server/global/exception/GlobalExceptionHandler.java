@@ -54,7 +54,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex) {
-        // TODO: 로깅 추가 (ex. Sentry, Logback)
+        System.err.println("Internal Server Error: " + ex.getMessage());
+        ex.printStackTrace();
+
         ErrorResponse errorResponse = new ErrorResponse("서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR.value());
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }

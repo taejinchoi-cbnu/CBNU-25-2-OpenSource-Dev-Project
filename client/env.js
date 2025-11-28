@@ -51,25 +51,3 @@ export const validateEnv = () => {
     throw new Error("VITE_API_TIMEOUT must be a number");
   }
 };
-
-// 환경별 로그 함수
-export const log = {
-  debug: (...args) => {
-    if (env.isDevelopment || env.features.enableDebugMode) {
-      console.log("[DEBUG]", ...args);
-    }
-  },
-  info: (...args) => {
-    if (!env.isTest) {
-      console.info("[INFO]", ...args);
-    }
-  },
-  warn: (...args) => {
-    if (!env.isTest) {
-      console.warn("[WARN]", ...args);
-    }
-  },
-  error: (...args) => {
-    console.error("[ERROR]", ...args);
-  },
-};
