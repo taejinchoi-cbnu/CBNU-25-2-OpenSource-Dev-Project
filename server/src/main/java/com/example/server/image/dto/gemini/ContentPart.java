@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GeminiGenerationConfig {
-    @JsonProperty("response_mime_type")
-    private String responseMimeType;
+public class ContentPart {
+    @JsonProperty("parts")
+    private List<Part> parts;
 }
