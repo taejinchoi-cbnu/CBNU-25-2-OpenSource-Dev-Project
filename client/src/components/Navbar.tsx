@@ -16,9 +16,10 @@ function Navbar() {
       toast.success("로그아웃되었습니다.");
       navigate("/");
     } catch (error) {
-      console.error("Logout failed:", error);
       if (error instanceof AxiosError) {
-        toast.error(`로그아웃 실패: ${error.response?.data?.message || "오류가 발생했습니다."}`);
+        toast.error(
+          `로그아웃 실패: ${error.response?.data?.message || "오류가 발생했습니다."}`
+        );
       }
     }
   };
