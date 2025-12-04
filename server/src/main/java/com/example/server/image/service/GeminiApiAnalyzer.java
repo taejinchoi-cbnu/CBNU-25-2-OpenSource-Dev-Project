@@ -3,6 +3,8 @@ package com.example.server.image.service;
 import com.example.server.image.dto.AnalysisResultDto;
 import com.example.server.image.dto.gemini.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -13,6 +15,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Component
 public class GeminiApiAnalyzer implements ImageAnalyzer {
 
@@ -21,13 +24,14 @@ public class GeminiApiAnalyzer implements ImageAnalyzer {
     private final String geminiApiPrompt;
     private final ObjectMapper objectMapper;
 
-    public GeminiApiAnalyzer(WebClient.Builder webClientBuilder,
+    public GeminiApiAnalyzer(@Qualifier("geminiWebClient") WebClient geminiWebClient,
                              @Value("${gemini.api.key}") String geminiApiKey,
                              @Value("${gemini.api.url}") String geminiApiUrl,
                              @Value("${gemini.api.prompt}") String geminiApiPrompt,
                              ObjectMapper objectMapper) {
 
-        this.webClient = webClientBuilder.baseUrl(geminiApiUrl).build();
+
+        this.webClient = geminiWebClient.mutate().baseUrl(geminiApiUrl).build();
         this.geminiApiKey = geminiApiKey;
         this.geminiApiPrompt = geminiApiPrompt;
         this.objectMapper = objectMapper;
@@ -45,8 +49,6 @@ public class GeminiApiAnalyzer implements ImageAnalyzer {
             // 3. API 호출
             GeminiResponse response = webClient.post()
                     .uri(uriBuilder -> uriBuilder.queryParam("key", geminiApiKey).build())
-                    .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, org.springframework.http.MediaType.APPLICATION_JSON_VALUE + "; charset=UTF-8")
-                    .accept(org.springframework.http.MediaType.APPLICATION_JSON)
                     .bodyValue(request)
                     .retrieve()
                     .bodyToMono(GeminiResponse.class)
@@ -58,6 +60,11 @@ public class GeminiApiAnalyzer implements ImageAnalyzer {
                         !response.getCandidates().get(0).getContent().getParts().isEmpty()) {
 
                     String jsonText = response.getCandidates().get(0).getContent().getParts().get(0).getText();
+
+                    // Gemini API 응답 JSON 로그
+                    log.info("=== Gemini API Response ===");
+                    log.info(jsonText);
+                    log.info("===========================");
 
                     Object parsedData = objectMapper.readValue(jsonText, Object.class);
                     
