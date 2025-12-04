@@ -12,6 +12,7 @@ import PostDetailPage from "./pages/PostDetailPage";
 import PostEditorPage from "./pages/PostEditorPage";
 import ImageAnalysisPage from "./pages/ImageAnalysisPage";
 import ImageResultPage from "./pages/ImageResultPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LandingPage from "./pages/LandingPage";
@@ -77,6 +78,7 @@ function App() {
               <Route path="/gradeAnalyze" element={<ImageAnalysisPage />} />
               <Route path="/grades/analyze" element={<ImageAnalysisPage />} />
               <Route path="/grades/result" element={<ImageResultPage />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Ssgoi>
         </main>
