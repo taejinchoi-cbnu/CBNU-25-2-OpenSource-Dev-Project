@@ -308,7 +308,16 @@ const ImageAnalysisPage: React.FC = () => {
     analyzeImage(file, {
       onSuccess: (data) => {
         if (data.result) {
-          setAnalysisResult(data.result);
+          // 과목이 없는 빈 학기 필터링
+          const filteredSemesters = data.result.semesters.filter(
+            (sem) => sem.subjects && sem.subjects.length > 0
+          );
+          const filteredResult = {
+            ...data.result,
+            semesters: filteredSemesters,
+          };
+
+          setAnalysisResult(filteredResult);
           setStep(2);
           toast.success("이미지 분석이 완료되었습니다.");
         } else {

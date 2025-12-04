@@ -75,6 +75,7 @@ const ImageResultPage: React.FC = () => {
   let earnedGe = 0;
   let earnedMajorReq = 0;
   let earnedMajorSel = 0;
+  let earnedGeneralElective = 0; // 일반선택 추가
   let earnedTotal = data.totalCredits || 0; // 서버 데이터가 있으면 사용
 
   if (!data.totalCredits) {
@@ -92,14 +93,47 @@ const ImageResultPage: React.FC = () => {
   data.semesters.forEach((sem) => {
     sem.subjects.forEach((sub) => {
       const type = sub.type || "";
+      const normalizedType = type.replace(/\s+/g, ""); // 공백 제거
       const credits = sub.credits || 0;
 
-      if (type.includes("교양")) earnedGe += credits;
-      if (type.includes("전공필수") || type.includes("전필"))
+      // 교양: 교양, 교필, 교선 포함
+      if (
+        normalizedType.includes("교양") ||
+        normalizedType.includes("교필") ||
+        normalizedType.includes("교선")
+      )
+        earnedGe += credits;
+
+      // 전공
+      if (
+        normalizedType.includes("전공필수") ||
+        normalizedType.includes("전필")
+      )
         earnedMajorReq += credits;
-      if (type.includes("전공선택") || type.includes("전선"))
+      if (
+        normalizedType.includes("전공선택") ||
+        normalizedType.includes("전선")
+      )
         earnedMajorSel += credits;
+
+      // 일반선택
+      if (
+        normalizedType.includes("일반선택") ||
+        normalizedType.includes("일선")
+      ) {
+        earnedGeneralElective += credits;
+      }
+
+      // 디버깅용 로그
+      console.log(`Subject: ${sub.subjectName}, Type: ${type}, Normalized: ${normalizedType}, Credits: ${credits}`);
     });
+  });
+
+  console.log("Calculated Credits:", {
+    earnedGe,
+    earnedMajorReq,
+    earnedMajorSel,
+    earnedGeneralElective,
   });
 
   const earnedMajorTotal = earnedMajorReq + earnedMajorSel;
@@ -232,12 +266,16 @@ const ImageResultPage: React.FC = () => {
               <p className="text-sm text-gray-400 mt-2">/ 4.5</p>
             </div>
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
-              <p className="text-gray-500 font-medium mb-2">총 이수 학점</p>
+              <p className="text-gray-500 font-medium mb-2">총 이수율</p>
               <div className="text-5xl font-black text-emerald-500">
-                {finalTotalCredits}
+                {Math.round(
+                  (finalTotalCredits / (requirements?.totalCredits || 140)) *
+                  100
+                )}
+                %
               </div>
               <p className="text-sm text-gray-400 mt-2">
-                / {requirements?.totalCredits || 140}
+                {finalTotalCredits} / {requirements?.totalCredits || 140}
               </p>
             </div>
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center hover:shadow-md transition-shadow">
@@ -245,8 +283,8 @@ const ImageResultPage: React.FC = () => {
               <div className="text-5xl font-black text-purple-500">
                 {requirements
                   ? Math.round(
-                      (earnedMajorTotal / requirements.majorCredits.total) * 100
-                    )
+                    (earnedMajorTotal / requirements.majorCredits.total) * 100
+                  )
                   : 0}
                 %
               </div>
@@ -325,28 +363,48 @@ const ImageResultPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 교양 학점 */}
-                <div>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-gray-700 font-medium">
-                      교양 (전체)
-                    </span>
-                    <span className="text-gray-500 text-sm">
-                      {earnedGe} / {requirements.ge.total}
-                    </span>
+                {/* 교양 및 일반선택 학점 */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-gray-700 font-medium">
+                        교양 (전체)
+                      </span>
+                      <span className="text-gray-500 text-sm">
+                        {earnedGe} / {requirements.ge.total}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div
+                        className="bg-emerald-500 h-3 rounded-full transition-all duration-1000"
+                        style={{
+                          width: `${Math.min((earnedGe / requirements.ge.total) * 100, 100)}%`,
+                        }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1">
+                      * 세부 영역(기초, 일반, 확대, 자연이공계)은 별도 확인이
+                      필요합니다.
+                    </p>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div
-                      className="bg-emerald-500 h-3 rounded-full transition-all duration-1000"
-                      style={{
-                        width: `${Math.min((earnedGe / requirements.ge.total) * 100, 100)}%`,
-                      }}
-                    ></div>
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-gray-700 font-medium">
+                        일반선택
+                      </span>
+                      <span className="text-gray-500 text-sm">
+                        {earnedGeneralElective} / 0 이상
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-3">
+                      <div
+                        className="bg-orange-400 h-3 rounded-full transition-all duration-1000"
+                        style={{
+                          width: "100%", // 일반선택은 제한이 없으므로 꽉 채움 (또는 적절한 비율)
+                        }}
+                      ></div>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    * 세부 영역(기초, 일반, 확대, 자연이공계)은 별도 확인이
-                    필요합니다.
-                  </p>
                 </div>
               </div>
             </div>

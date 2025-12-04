@@ -24,9 +24,8 @@ export const useUpdateProfile = () => {
       toast.success("프로필이 성공적으로 업데이트되었습니다.");
       return queryClient.invalidateQueries({ queryKey: userKeys.profile() });
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("프로필 업데이트에 실패했습니다.");
-      console.error(error);
     },
   });
 };

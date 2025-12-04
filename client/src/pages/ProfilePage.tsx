@@ -58,7 +58,11 @@ function ProfilePage() {
   };
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-[60vh] flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (isError) {
@@ -72,12 +76,11 @@ function ProfilePage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16">
       {/* 헤더 섹션 */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[var(--color-primary)] tracking-tight flex items-center gap-3">
-          <UserIcon className="w-8 h-8" />
-          내 프로필
+          <UserIcon className="w-8 h-8" />내 프로필
         </h1>
         <p className="mt-2 text-gray-600">
           개인 정보를 관리하고 활동 내역을 확인할 수 있습니다.
@@ -168,7 +171,9 @@ function ProfilePage() {
                     <li
                       key={post.id}
                       className="group hover:bg-blue-50/50 transition-colors duration-200 cursor-pointer"
-                      onClick={() => (window.location.href = `/board/posts/${post.id}`)}
+                      onClick={() =>
+                        (window.location.href = `/board/posts/${post.id}`)
+                      }
                     >
                       <div className="p-5 flex justify-between items-center">
                         <span className="text-gray-900 font-medium group-hover:text-[var(--color-primary)] transition-colors line-clamp-1">
@@ -215,7 +220,9 @@ function ProfilePage() {
                             <DocumentTextIcon className="w-3 h-3" />
                             원글: {comment.postTitle || "삭제된 게시글"}
                           </span>
-                          <span>{new Date(comment.createdAt).toLocaleDateString()}</span>
+                          <span>
+                            {new Date(comment.createdAt).toLocaleDateString()}
+                          </span>
                         </div>
                       </div>
                     </li>

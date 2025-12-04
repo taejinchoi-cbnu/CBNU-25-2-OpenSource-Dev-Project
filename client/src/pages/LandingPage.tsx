@@ -79,7 +79,8 @@ export default function LandingPage() {
                 성적 시각화
               </h3>
               <p className="text-xl text-gray-600 leading-relaxed">
-                학기별 평점, 이수 현황을  <br /> 직관적인 그래프로 확인하세요. <br />
+                학기별 평점, 이수 현황을 <br /> 직관적인 그래프로 확인하세요.{" "}
+                <br />
                 성장 곡선을 한눈에 파악할 수 있습니다.
               </p>
             </div>
@@ -104,7 +105,8 @@ export default function LandingPage() {
                 졸업 요건 분석
               </h3>
               <p className="text-xl text-gray-600 leading-relaxed">
-                입학 연도와 학과에 따른 졸업 요건을 자동으로 분석해드립니다.<br />
+                입학 연도와 학과에 따른 졸업 요건을 자동으로 분석해드립니다.
+                <br />
                 남은 학점과 필수 과목을 놓치지 마세요.
               </p>
             </div>

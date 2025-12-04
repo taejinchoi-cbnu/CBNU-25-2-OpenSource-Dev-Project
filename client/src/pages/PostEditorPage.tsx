@@ -7,7 +7,7 @@ import {
 } from "../hooks/queries/useBoardQueries";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { toast } from "react-toastify";
-import { SsgoiTransition } from "@ssgoi/react";
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 
 const PostEditorPage = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -73,19 +73,45 @@ const PostEditorPage = () => {
     }
   };
 
-  if (isEditMode && isLoadingPost) return <LoadingSpinner />;
+  if (isEditMode && isLoadingPost)
+    return (
+      <div className="min-h-[60vh] flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
   if (isEditMode && isErrorPost)
-    return <div>게시글을 불러오는 데 실패했습니다.</div>;
+    return (
+      <div className="text-center py-20 text-gray-500">
+        게시글을 불러오는 데 실패했습니다.
+      </div>
+    );
 
   return (
-    <SsgoiTransition id="/board/editor">
-      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
-        <h2>{isEditMode ? "게시글 수정" : "새 게시글 작성"}</h2>
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "15px" }}>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mb-8">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center text-gray-500 hover:text-[var(--color-primary)] mb-6 transition-colors"
+        >
+          <ChevronLeftIcon className="w-5 h-5 mr-1" />
+          뒤로 가기
+        </button>
+        <h1 className="text-3xl font-bold text-[var(--color-primary)] tracking-tight">
+          {isEditMode ? "게시글 수정" : "새 게시글 작성"}
+        </h1>
+        <p className="mt-2 text-gray-600">
+          {isEditMode
+            ? "작성한 게시글의 내용을 수정합니다."
+            : "자유롭게 이야기를 나누고 정보를 공유해보세요."}
+        </p>
+      </div>
+
+      <div className="glass rounded-2xl p-8 sm:p-10 shadow-sm">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
             <label
               htmlFor="title"
-              style={{ display: "block", marginBottom: "5px" }}
+              className="block text-sm font-medium text-gray-700 mb-2"
             >
               제목
             </label>
@@ -95,13 +121,15 @@ const PostEditorPage = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              style={{ width: "100%", padding: "8px" }}
+              className="input-field text-lg py-3"
+              placeholder="제목을 입력하세요"
             />
           </div>
-          <div style={{ marginBottom: "15px" }}>
+
+          <div>
             <label
               htmlFor="content"
-              style={{ display: "block", marginBottom: "5px" }}
+              className="block text-sm font-medium text-gray-700 mb-2"
             >
               내용
             </label>
@@ -110,19 +138,39 @@ const PostEditorPage = () => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               required
-              style={{ width: "100%", padding: "8px", minHeight: "300px" }}
+              className="input-field min-h-[400px] resize-none py-4 leading-relaxed"
+              placeholder="내용을 입력하세요"
             />
           </div>
-          <button type="submit" disabled={isCreating || isUpdating}>
-            {isCreating || isUpdating
-              ? "저장 중..."
-              : isEditMode
-                ? "수정하기"
-                : "작성하기"}
-          </button>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="px-6 py-3 text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-all font-medium"
+            >
+              취소
+            </button>
+            <button
+              type="submit"
+              disabled={isCreating || isUpdating}
+              className="px-8 py-3 bg-[var(--color-primary)] text-white rounded-xl hover:bg-[var(--color-primary)]/90 transition-all shadow-md hover:shadow-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isCreating || isUpdating ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>저장 중...</span>
+                </div>
+              ) : isEditMode ? (
+                "수정하기"
+              ) : (
+                "작성하기"
+              )}
+            </button>
+          </div>
         </form>
       </div>
-    </SsgoiTransition>
+    </div>
   );
 };
 
