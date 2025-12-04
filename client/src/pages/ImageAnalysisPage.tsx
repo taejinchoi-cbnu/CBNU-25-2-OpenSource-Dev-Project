@@ -308,9 +308,8 @@ const ImageAnalysisPage: React.FC = () => {
     analyzeImage(file, {
       onSuccess: (data) => {
         if (data.result) {
-          // 과목이 없는 빈 학기 필터링
           const filteredSemesters = data.result.semesters.filter(
-            (sem) => sem.subjects && sem.subjects.length > 0
+            (sem) => sem.semester !== "학점인정" && sem.gpa > 0
           );
           const filteredResult = {
             ...data.result,
@@ -358,7 +357,7 @@ const ImageAnalysisPage: React.FC = () => {
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                   AI가 성적표 이미지를 분석하여 자동으로 학점을 계산하고
                   <br />
-                  아름다운 시각화 리포트를 제공합니다.
+                  시각화 리포트를 제공합니다.
                 </p>
               </div>
               <UploadSection

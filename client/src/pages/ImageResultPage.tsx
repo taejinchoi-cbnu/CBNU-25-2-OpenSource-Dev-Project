@@ -15,6 +15,7 @@ import {
   Cell,
   BarChart,
   Bar,
+  ReferenceLine,
 } from "recharts";
 import html2canvas from "html2canvas";
 import { toast } from "react-toastify";
@@ -71,11 +72,13 @@ const ImageResultPage: React.FC = () => {
 
   const requirements = getRequirements(admissionYear, major);
 
-  // 2. 영역별 이수 학점 계산
-  let earnedGe = 0;
-  let earnedMajorReq = 0;
-  let earnedMajorSel = 0;
-  let earnedGeneralElective = 0; // 일반선택 추가
+  const majorRequiredFromSummary = data.gradeSummary?.major_required_credits;
+  const majorElectiveFromSummary = data.gradeSummary?.major_elective_credits;
+  const geRequiredFromSummary = data.gradeSummary?.ge_required_credits;
+  const geElectiveFromSummary = data.gradeSummary?.ge_elective_credits;
+  const freeElectiveFromSummary = data.gradeSummary?.free_elective_credits;
+
+  // 2. 영역별 이수 학점 계산 (grade_summary 우선, 없으면 계산)
   let earnedTotal = data.totalCredits || 0; // 서버 데이터가 있으면 사용
 
   if (!data.totalCredits) {
@@ -90,6 +93,11 @@ const ImageResultPage: React.FC = () => {
     }, 0);
   }
 
+  let calculatedGe = 0;
+  let calculatedMajorReq = 0;
+  let calculatedMajorSel = 0;
+  let calculatedGeneralElective = 0;
+
   data.semesters.forEach((sem) => {
     sem.subjects.forEach((sub) => {
       const type = sub.type || "";
@@ -102,49 +110,75 @@ const ImageResultPage: React.FC = () => {
         normalizedType.includes("교필") ||
         normalizedType.includes("교선")
       )
-        earnedGe += credits;
+        calculatedGe += credits;
 
       // 전공
       if (
         normalizedType.includes("전공필수") ||
         normalizedType.includes("전필")
       )
-        earnedMajorReq += credits;
+        calculatedMajorReq += credits;
       if (
         normalizedType.includes("전공선택") ||
         normalizedType.includes("전선")
       )
-        earnedMajorSel += credits;
+        calculatedMajorSel += credits;
 
       // 일반선택
       if (
         normalizedType.includes("일반선택") ||
         normalizedType.includes("일선")
       ) {
-        earnedGeneralElective += credits;
+        calculatedGeneralElective += credits;
       }
-
-      // 디버깅용 로그
-      console.log(`Subject: ${sub.subjectName}, Type: ${type}, Normalized: ${normalizedType}, Credits: ${credits}`);
     });
   });
 
-  console.log("Calculated Credits:", {
+  const earnedMajorReq = majorRequiredFromSummary ?? calculatedMajorReq;
+  const earnedMajorSel = majorElectiveFromSummary ?? calculatedMajorSel;
+  const earnedGeneralElective =
+    freeElectiveFromSummary ?? calculatedGeneralElective;
+
+  const earnedGe =
+    geRequiredFromSummary !== undefined && geElectiveFromSummary !== undefined
+      ? geRequiredFromSummary + geElectiveFromSummary
+      : calculatedGe;
+
+  console.log("Category Credits (from summary or calculated):", {
     earnedGe,
     earnedMajorReq,
     earnedMajorSel,
     earnedGeneralElective,
+    source: majorRequiredFromSummary !== undefined ? "summary" : "calculated",
   });
 
   const earnedMajorTotal = earnedMajorReq + earnedMajorSel;
 
-  // 차트용 데이터 처리
+  const semesterOrder: Record<string, number> = {
+    "1학기": 1,
+    "여름학기": 2,
+    "2학기": 3,
+    "겨울학기": 4,
+  };
+
   const semesterHistory = data.semesters
+    .filter((sem) => sem.semester !== "학점인정" && sem.gpa > 0)
     .map((sem) => ({
       name: `${sem.year}-${sem.semester}`,
       gpa: sem.gpa,
+      credits: sem.credits || sem.earnedCredits || sem.earned_credits || 0,
+      subjectCount: sem.subjects.length,
+      semester: sem.semester,
+      year: sem.year,
     }))
-    .reverse();
+    .sort((a, b) => {
+      // 1. 연도순 정렬
+      if (a.year !== b.year) {
+        return a.year - b.year;
+      }
+      // 2. 같은 연도면 학기순 정렬 (1학기 → 여름학기 → 2학기 → 겨울학기)
+      return (semesterOrder[a.semester] || 0) - (semesterOrder[b.semester] || 0);
+    });
 
   const courseTypeData: ChartData[] = [];
   const gradeDistData: ChartData[] = [];
@@ -406,6 +440,61 @@ const ImageResultPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {/*세부 학점 */}
+                {(majorRequiredFromSummary !== undefined ||
+                  majorElectiveFromSummary !== undefined ||
+                  geRequiredFromSummary !== undefined ||
+                  geElectiveFromSummary !== undefined ||
+                  freeElectiveFromSummary !== undefined) && (
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-4">
+                      세부 이수 학점
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                      {majorRequiredFromSummary !== undefined && (
+                        <div className="text-center p-4 bg-purple-50 rounded-lg">
+                          <p className="text-3xl font-bold text-purple-600">
+                            {majorRequiredFromSummary}
+                          </p>
+                          <p className="text-xs text-gray-600 mt-2">전공필수</p>
+                        </div>
+                      )}
+                      {majorElectiveFromSummary !== undefined && (
+                        <div className="text-center p-4 bg-purple-50 rounded-lg">
+                          <p className="text-3xl font-bold text-purple-500">
+                            {majorElectiveFromSummary}
+                          </p>
+                          <p className="text-xs text-gray-600 mt-2">전공선택</p>
+                        </div>
+                      )}
+                      {geRequiredFromSummary !== undefined && (
+                        <div className="text-center p-4 bg-emerald-50 rounded-lg">
+                          <p className="text-3xl font-bold text-emerald-600">
+                            {geRequiredFromSummary}
+                          </p>
+                          <p className="text-xs text-gray-600 mt-2">교양필수</p>
+                        </div>
+                      )}
+                      {geElectiveFromSummary !== undefined && (
+                        <div className="text-center p-4 bg-emerald-50 rounded-lg">
+                          <p className="text-3xl font-bold text-emerald-500">
+                            {geElectiveFromSummary}
+                          </p>
+                          <p className="text-xs text-gray-600 mt-2">교양선택</p>
+                        </div>
+                      )}
+                      {freeElectiveFromSummary !== undefined && (
+                        <div className="text-center p-4 bg-orange-50 rounded-lg">
+                          <p className="text-3xl font-bold text-orange-500">
+                            {freeElectiveFromSummary}
+                          </p>
+                          <p className="text-xs text-gray-600 mt-2">일반선택</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -440,12 +529,41 @@ const ImageResultPage: React.FC = () => {
                       tick={{ fill: "#6B7280", fontSize: 12 }}
                     />
                     <Tooltip
-                      contentStyle={{
-                        borderRadius: "12px",
-                        border: "none",
-                        boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-white p-4 rounded-xl shadow-lg border border-gray-200">
+                              <p className="font-bold text-gray-800 mb-2">
+                                {data.name}
+                              </p>
+                              <p className="text-blue-600 text-lg font-bold">
+                                평점: {data.gpa.toFixed(2)}
+                              </p>
+                              <p className="text-gray-600 text-sm mt-1">
+                                취득학점: {data.credits}학점
+                              </p>
+                              <p className="text-gray-600 text-sm">
+                                수강과목: {data.subjectCount}개
+                              </p>
+                            </div>
+                          );
+                        }
+                        return null;
                       }}
                       cursor={{ stroke: "#3B82F6", strokeWidth: 2 }}
+                    />
+                    <ReferenceLine
+                      y={parseFloat(averageGpa)}
+                      stroke="#F59E0B"
+                      strokeDasharray="5 5"
+                      label={{
+                        value: `전체 평균: ${averageGpa}`,
+                        position: "right",
+                        fill: "#F59E0B",
+                        fontSize: 12,
+                        fontWeight: 600,
+                      }}
                     />
                     <Line
                       type="monotone"
