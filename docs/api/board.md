@@ -141,24 +141,7 @@
 -   **`401 Unauthorized`**: 인증되지 않은 사용자의 요청.
 -   **`404 Not Found`**: 댓글을 작성할 게시글이 존재하지 않는 경우.
 
-### 2.2. 댓글 목록 조회
-
--   **Endpoint:** `GET /api/board/posts/{postId}/comments`
--   **Description:** 특정 게시글에 달린 댓글 목록을 페이지네이션하여 조회합니다.
-
-#### Path Variables
-
-| Field    | Type | Description            |
-| :------- | :--- | :--------------------- |
-| `postId` | Long | 댓글을 조회할 게시글 ID |
-
-#### Responses
-
--   **`200 OK`**: 댓글 목록 조회 성공. `Page` 객체 형식으로 데이터를 반환합니다.
--   **`401 Unauthorized`**: 인증되지 않은 사용자의 요청.
--   **`404 Not Found`**: 해당 ID의 게시글이 존재하지 않는 경우.
-
-### 2.3. 댓글 수정
+### 2.2. 댓글 수정
 
 -   **Endpoint:** `PUT /api/board/posts/{postId}/comments/{commentId}`
 -   **Description:** 특정 댓글의 내용을 수정합니다. (작성자 본인만 가능)
@@ -184,7 +167,7 @@
 -   **`403 Forbidden`**: 수정 권한이 없는 경우.
 -   **`404 Not Found`**: 해당 ID의 댓글이 존재하지 않는 경우.
 
-### 2.4. 댓글 삭제
+### 2.3. 댓글 삭제
 
 -   **Endpoint:** `DELETE /api/board/posts/{postId}/comments/{commentId}`
 -   **Description:** 특정 댓글을 삭제합니다. (작성자 본인만 가능)
