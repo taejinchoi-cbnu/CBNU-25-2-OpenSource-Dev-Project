@@ -20,6 +20,7 @@ export interface AnalysisResult {
   studentId?: string;
   averageGpa?: number;
   totalCredits?: number;
+  gradeSummary?: ServerGradeSummary; 
   semesters: SemesterGrade[];
 }
 
@@ -35,6 +36,11 @@ export interface ServerGradeSummary {
   total_gpa_sum: number;
   average_gpa: number;
   score_100_scale: number;
+  major_required_credits?: number; // 전필
+  major_elective_credits?: number; // 전선
+  ge_required_credits?: number; // 교필
+  ge_elective_credits?: number; // 교선
+  free_elective_credits?: number; // 일선
 }
 
 export interface ServerSemesterHistory {

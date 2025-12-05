@@ -65,6 +65,8 @@ function transformServerResponseToUiModel(
       year: sem.year,
       semester: sem.semester_name,
       gpa: sem.average_gpa,
+      credits: sem.applied_credits,
+      earnedCredits: sem.earned_credits,
       subjects: semestersMap.get(key) || [],
     };
   });
@@ -75,6 +77,7 @@ function transformServerResponseToUiModel(
       studentId: serverData.student_info?.student_id || "Unknown",
       averageGpa: serverData.grade_summary?.average_gpa || 0,
       totalCredits: serverData.grade_summary?.earned_credits || 0,
+      gradeSummary: serverData.grade_summary, // Pass full summary for category breakdown
       semesters,
     },
   };
