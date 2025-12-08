@@ -447,54 +447,54 @@ const ImageResultPage: React.FC = () => {
                   geRequiredFromSummary !== undefined ||
                   geElectiveFromSummary !== undefined ||
                   freeElectiveFromSummary !== undefined) && (
-                  <div className="mt-6 pt-6 border-t border-gray-200">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-4">
-                      세부 이수 학점
-                    </h4>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                      {majorRequiredFromSummary !== undefined && (
-                        <div className="text-center p-4 bg-purple-50 rounded-lg">
-                          <p className="text-3xl font-bold text-purple-600">
-                            {majorRequiredFromSummary}
-                          </p>
-                          <p className="text-xs text-gray-600 mt-2">전공필수</p>
-                        </div>
-                      )}
-                      {majorElectiveFromSummary !== undefined && (
-                        <div className="text-center p-4 bg-purple-50 rounded-lg">
-                          <p className="text-3xl font-bold text-purple-500">
-                            {majorElectiveFromSummary}
-                          </p>
-                          <p className="text-xs text-gray-600 mt-2">전공선택</p>
-                        </div>
-                      )}
-                      {geRequiredFromSummary !== undefined && (
-                        <div className="text-center p-4 bg-emerald-50 rounded-lg">
-                          <p className="text-3xl font-bold text-emerald-600">
-                            {geRequiredFromSummary}
-                          </p>
-                          <p className="text-xs text-gray-600 mt-2">교양필수</p>
-                        </div>
-                      )}
-                      {geElectiveFromSummary !== undefined && (
-                        <div className="text-center p-4 bg-emerald-50 rounded-lg">
-                          <p className="text-3xl font-bold text-emerald-500">
-                            {geElectiveFromSummary}
-                          </p>
-                          <p className="text-xs text-gray-600 mt-2">교양선택</p>
-                        </div>
-                      )}
-                      {freeElectiveFromSummary !== undefined && (
-                        <div className="text-center p-4 bg-orange-50 rounded-lg">
-                          <p className="text-3xl font-bold text-orange-500">
-                            {freeElectiveFromSummary}
-                          </p>
-                          <p className="text-xs text-gray-600 mt-2">일반선택</p>
-                        </div>
-                      )}
+                    <div className="mt-6 pt-6 border-t border-gray-200">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-4">
+                        세부 이수 학점
+                      </h4>
+                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        {majorRequiredFromSummary !== undefined && (
+                          <div className="text-center p-4 bg-purple-50 rounded-lg">
+                            <p className="text-3xl font-bold text-purple-600">
+                              {majorRequiredFromSummary}
+                            </p>
+                            <p className="text-xs text-gray-600 mt-2">전공필수</p>
+                          </div>
+                        )}
+                        {majorElectiveFromSummary !== undefined && (
+                          <div className="text-center p-4 bg-purple-50 rounded-lg">
+                            <p className="text-3xl font-bold text-purple-500">
+                              {majorElectiveFromSummary}
+                            </p>
+                            <p className="text-xs text-gray-600 mt-2">전공선택</p>
+                          </div>
+                        )}
+                        {geRequiredFromSummary !== undefined && (
+                          <div className="text-center p-4 bg-emerald-50 rounded-lg">
+                            <p className="text-3xl font-bold text-emerald-600">
+                              {geRequiredFromSummary}
+                            </p>
+                            <p className="text-xs text-gray-600 mt-2">교양필수</p>
+                          </div>
+                        )}
+                        {geElectiveFromSummary !== undefined && (
+                          <div className="text-center p-4 bg-emerald-50 rounded-lg">
+                            <p className="text-3xl font-bold text-emerald-500">
+                              {geElectiveFromSummary}
+                            </p>
+                            <p className="text-xs text-gray-600 mt-2">교양선택</p>
+                          </div>
+                        )}
+                        {freeElectiveFromSummary !== undefined && (
+                          <div className="text-center p-4 bg-orange-50 rounded-lg">
+                            <p className="text-3xl font-bold text-orange-500">
+                              {freeElectiveFromSummary}
+                            </p>
+                            <p className="text-xs text-gray-600 mt-2">일반선택</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             </div>
           )}
@@ -677,8 +677,36 @@ const ImageResultPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="text-center text-gray-400 text-sm pt-8 pb-4">
-            Generated by Image Visualization System
+          <div className="mt-12 mb-8 flex justify-center">
+            <button
+              onClick={() => toast.info("준비중!")}
+              className="group relative flex items-center justify-center px-8 py-4 bg-white border-2 border-indigo-100 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-300 w-full md:w-auto"
+            >
+              <div className="flex flex-col items-center">
+                <span className="text-indigo-600 font-bold text-lg mb-1 group-hover:scale-105 transition-transform">
+                  더 상세한 리포트가 필요하신가요?
+                </span>
+                <span className="text-gray-500 text-sm group-hover:text-gray-600">
+                  추가 성적표 이미지를 등록하고 전공/교양 분석 결과 확인하기
+                </span>
+              </div>
+              <div className="absolute right-6 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-6 h-6 text-indigo-500"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                  />
+                </svg>
+              </div>
+            </button>
           </div>
         </div>
       </div>
