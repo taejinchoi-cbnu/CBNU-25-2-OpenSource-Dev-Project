@@ -200,29 +200,15 @@
   - Client(React+Nginx), Server(Spring Boot) 애플리케이션의 Dockerfile 및 .dockerignore 작성.
   - `docker-compose.yml`을 통한 컨테이너 오케스트레이션 환경 구성.
   - Docker 환경에서의 API 경로 및 CORS 문제 해결.
+- **이미지 분석 기능 구현 (완료)**:
+  - **신규 페이지 및 라우팅**: `ImageAnalysisPage.tsx` 생성 및 라우팅 연결 완료.
+  - **API 연동**: `api/imageService.ts` 구현 및 서버 연동 완료.
+  - **커스텀 쿼리 훅**: `hooks/queries/useImageQueries.ts` 구현 완료.
+  - **UI 컴포넌트**: 파일 업로드, 유효성 검사, 결과 시각화 (`ImageResultPage.tsx`) 구현 완료.
+  - **네비게이션**: 네비게이션 바에 링크 추가 완료.
 
 ## 다음 작업 계획
 
-1.  **이미지 분석 기능 구현 (`feature/image-analysis`)**
-    - **목표**: 사용자가 성적표 이미지를 업로드하고, 서버로부터 분석 결과를 받아 시각화된 형태로 확인할 수 있는 기능을 구현합니다.
-
-    - **주요 작업**:
-      1.  **신규 페이지 및 라우팅**:
-          - 이미지 업로드와 결과 확인을 위한 `pages/ImageAnalysisPage.tsx` 페이지 컴포넌트를 생성합니다.
-
-          - `App.tsx`에 `/grades/analyze` 와 같은 경로를 추가하여 위 페이지로 연결합니다.
-
-      2.  **API 연동 모듈**:
-          - `api/imageService.ts` 파일을 생성하고, 서버의 `/api/images/analyze` 엔드포인트로 `multipart/form-data` 요청을 보내는 API 호출 함수를 작성합니다.
-
-      3.  **커스텀 쿼리 훅**:
-          - `hooks/queries/useImageQueries.ts` 파일을 생성합니다.
-
-          - `useMutation`을 사용하여 이미지 분석 API 요청의 상태(로딩, 성공, 에러)를 관리하는 `useImageAnalysis` 훅을 구현합니다.
-
-      4.  **UI 컴포넌트**:
-          - **파일 업로드**: 사용자가 이미지 파일을 선택하고 업로드할 수 있는 UI를 구현합니다. (완료)
-          - **클라이언트 유효성 검사**: 업로드 전, 파일이 허용된 형식(`jpeg`, `png`, `gif`, `webp`)과 크기(최대 5MB)를 만족하는지 검사하고, 조건에 맞지 않으면 `react-toastify`를 통해 즉시 에러 메시지를 표시합니다. (완료)
-          - **결과 시각화**: `useImageAnalysis` 훅으로부터 받은 서버의 분석 결과(JSON)를 차트나 테이블 형태로 표시하는 `components/AnalysisResult.tsx`와 같은 컴포넌트를 개발합니다. (진행중)
-
-      5.  **네비게이션**: `Navbar.tsx`에 '성적 분석'과 같이 새로 만든 페이지로 이동하는 링크를 추가합니다.
+1.  **유지보수 및 최적화**
+    - 지속적인 버그 모니터링 및 수정.
+    - 성능 최적화 및 사용자 경험 개선.

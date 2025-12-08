@@ -70,31 +70,20 @@
     - **API 문서화**: `Swagger` 어노테이션을 추가하여 API 명세를 자동화하고, 별도의 Markdown(`docs/api/board.md`) 문서도 작성했습니다.
     - **트러블슈팅**: 구현 과정에서 발생한 DB 연결, 스키마 불일치, 인증 오류 등 **모든 문제를 해결**하고 회고 문서(`docs/board회고.md`)에 상세히 기록했습니다.
 
+5.  **이미지 분석 API 엔드포인트 개발 (완료)**
+    *   **목표**: 클라이언트로부터 성적표 이미지를 받아 AI로 분석하고, 그 결과를 가공하여 반환하는 API 구현 완료.
+    *   **주요 작업**:
+        1.  **`ImageAnalyzer` 인터페이스 설계**: (완료)
+        2.  **`GeminiApiAnalyzer` 구현**: (완료)
+        3.  **`image` 도메인 생성**: (완료)
+        4.  **`ImageController` 구현**: (완료)
+        5.  **`ImageService` 구현**: (완료)
+        6.  **프롬프트 엔지니어링 및 JSON 포맷 확정**: (완료)
+        7.  **구조화된 응답 DTO 구현**: (완료)
+        8.  **`SecurityConfig` 업데이트**: (완료)
+        9.  **Gemini API Key 설정**: (완료)
+
 ### 다음 작업 계획 (Next Steps)
 
-
-
-1.  **이미지 분석 API 엔드포인트 개발 (`feature/image-analysis`)**
-
-    *   **목표**: 클라이언트로부터 성적표 이미지를 받아 AI로 분석하고, 그 결과를 가공하여 반환하는 확장 가능한 API를 구현합니다.
-
-    *   **아키텍처 원칙**:
-
-        *   **인터페이스 기반 설계**: 향후 이미지 분석 모듈(Gemini, 로컬 모델 등)을 쉽게 교체할 수 있도록 `ImageAnalyzer` 인터페이스를 기반으로 로직을 추상화합니다.
-
-        *   **Stateless 이미지 처리**: 사용자의 개인정보 보호를 위해, 업로드된 이미지는 서버/DB에 영구 저장되지 않습니다. 이미지는 요청 처리 중 메모리상에서만 존재하며, 분석 완료 후 즉시 폐기됩니다.
-
-    *   **주요 작업**:
-        1.  **`ImageAnalyzer` 인터페이스 설계**: `analyze` 메서드를 포함하는 분석 로직 명세를 정의합니다. (완료)
-        2.  **`GeminiApiAnalyzer` 구현**: `ImageAnalyzer`의 첫 번째 구현체로, Gemini API 호출 로직을 담당합니다. (완료)
-        3.  **`image` 도메인 생성**: `controller`, `service`, `dto`, `exception` 패키지 구조를 생성합니다. (완료)
-        4.  **`ImageController` 구현**: `POST /api/images/analyze` 엔드포인트를 통해 이미지 파일을 수신합니다. (완료)
-        5.  **`ImageService` 구현**: `ImageAnalyzer` 인터페이스에 의존하며, 실제 분석은 주입된 구현체에 위임합니다. (완료)
-        6.  **프롬프트 엔지니어링 및 JSON 포맷 확정**:
-            *   Gemini API가 일관되고 정확한 JSON 결과물을 반환하도록 `application.properties`의 프롬프트를 수정하고 확정합니다. (완료)
-            *   이 단계를 통해 확정된 JSON의 key와 value 구조는 다음 단계 DTO 설계의 기반이 됩니다. (완료)
-        7.  **구조화된 응답 DTO 구현**:
-            *   6번 단계에서 확정된 JSON 포맷에 맞춰, 서버에서 사용할 Java DTO 클래스들을 `image/dto` 패키지에 상세히 구현합니다. (완료)
-            *   `AnalysisResultDto`가 단순 문자열이 아닌, 이 구조화된 DTO를 포함하도록 수정합니다. (완료)
-        8.  **`SecurityConfig` 업데이트**: `/api/images/**` 경로에 **모든 사용자(인증되지 않은 사용자 포함)**가 접근 가능하도록 보안 설정을 추가합니다. (완료)
-        9.  **Gemini API Key 설정**: `application.properties`에 `gemini.api.key`와 `gemini.api.prompt`를 설정하고, `GeminiApiAnalyzer`에서 사용합니다. (완료)
+1.  **유지보수 및 성능 최적화**
+    - API 응답 속도 개선 및 안정성 확보.
