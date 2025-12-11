@@ -25,7 +25,6 @@ const processQueue = (error: Error | null, token: string | null = null) => {
   failedQueue = [];
 };
 
-// Axios Request Interceptor, Store에 저장된 Access Token을 HTTP header에 추가
 apiClient.interceptors.request.use(
   (config) => {
     // 로그인/회원가입 요청에는 Authorization 헤더를 추가하지 않음
@@ -34,7 +33,6 @@ apiClient.interceptors.request.use(
       config.url?.includes("/auth/signup");
 
     if (!isAuthEndpoint) {
-      // Zustand 스토어에서 Access Token을 가져옴
       const { accessToken } = useAuthStore.getState();
 
       if (accessToken) {
@@ -49,7 +47,7 @@ apiClient.interceptors.request.use(
   }
 );
 
-// Axios Response Interceptor, 401 에러 발생 시 토큰 갱신 및 요청 재시도
+// 401 에러 발생 시 토큰 갱신 및 요청 재시도
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -62,7 +60,7 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // refresh 요청 자체가 401이면 로그아웃 (무한 루프 방지)
+    // refresh 요청 자체가 401이면 로그아웃
     if (originalRequest.url?.includes("/auth/refresh")) {
       useAuthStore.getState().clearAuth();
       // 강제 리다이렉트 제거: 비로그인 상태로 남김
@@ -103,14 +101,12 @@ apiClient.interceptors.response.use(
       // 대기 중인 요청들 처리
       processQueue(null, accessToken);
 
-      // 원래 요청 재시도
       originalRequest.headers.Authorization = `Bearer ${accessToken}`;
       return apiClient(originalRequest);
     } catch (refreshError) {
       // 토큰 갱신 실패 시 로그아웃
       processQueue(refreshError as Error, null);
       useAuthStore.getState().clearAuth();
-      // 강제 리다이렉트 제거: 비로그인 상태로 남김
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

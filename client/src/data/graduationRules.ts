@@ -166,9 +166,7 @@ export const getRequirements = (
   }
 
   return (
-    graduationRules.find(
-      (r) => r.cohort === year && r.major === targetMajor
-    ) ||
+    graduationRules.find((r) => r.cohort === year && r.major === targetMajor) ||
     graduationRules.find((r) => r.cohort === 2024 && r.major === majorName)
   );
 };

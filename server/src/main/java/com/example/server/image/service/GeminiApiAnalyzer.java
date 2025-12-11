@@ -11,9 +11,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import reactor.util.retry.Retry;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Slf4j
 @Component
@@ -25,11 +28,10 @@ public class GeminiApiAnalyzer implements ImageAnalyzer {
     private final ObjectMapper objectMapper;
 
     public GeminiApiAnalyzer(@Qualifier("geminiWebClient") WebClient geminiWebClient,
-                             @Value("${gemini.api.key}") String geminiApiKey,
-                             @Value("${gemini.api.url}") String geminiApiUrl,
-                             @Value("${gemini.api.prompt}") String geminiApiPrompt,
-                             ObjectMapper objectMapper) {
-
+            @Value("${gemini.api.key}") String geminiApiKey,
+            @Value("${gemini.api.url}") String geminiApiUrl,
+            @Value("${gemini.api.prompt}") String geminiApiPrompt,
+            ObjectMapper objectMapper) {
 
         this.webClient = geminiWebClient.mutate().baseUrl(geminiApiUrl).build();
         this.geminiApiKey = geminiApiKey;
@@ -52,6 +54,8 @@ public class GeminiApiAnalyzer implements ImageAnalyzer {
                     .bodyValue(request)
                     .retrieve()
                     .bodyToMono(GeminiResponse.class)
+                    .retryWhen(Retry.backoff(5, Duration.ofSeconds(2))
+                            .filter(throwable -> throwable instanceof WebClientResponseException.TooManyRequests))
                     .block();
 
             // 4. 응답 파싱
@@ -61,13 +65,8 @@ public class GeminiApiAnalyzer implements ImageAnalyzer {
 
                     String jsonText = response.getCandidates().get(0).getContent().getParts().get(0).getText();
 
-                    // Gemini API 응답 JSON 로그
-                    log.info("=== Gemini API Response ===");
-                    log.info(jsonText);
-                    log.info("===========================");
-
                     Object parsedData = objectMapper.readValue(jsonText, Object.class);
-                    
+
                     return new AnalysisResultDto(parsedData);
                 }
             }
