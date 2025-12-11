@@ -1,26 +1,19 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { authService } from "../api/authService";
-import { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import logo from "../assets/logo.png";
 
 function Navbar() {
   const { user, clearAuth } = useAuthStore();
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await authService.logout();
+    } finally {
       clearAuth();
-      toast.success("로그아웃되었습니다.");
-      navigate("/");
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(
-          `로그아웃 실패: ${error.response?.data?.message || "오류가 발생했습니다."}`
-        );
-      }
+      toast.info("로그아웃되었습니다.");
+      window.location.href = "/";
     }
   };
 
