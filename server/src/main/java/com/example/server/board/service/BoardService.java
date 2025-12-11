@@ -52,8 +52,11 @@ public class BoardService {
         return response;
     }
 
-    public Page<PostResponse> getPosts(Pageable pageable) {
-        return postRepository.findAllWithAuthor(pageable).map(PostResponse::new);
+    public Page<PostResponse> getPosts(String keyword, Pageable pageable) {
+        Page<Post> posts = (keyword == null || keyword.isBlank())
+            ? postRepository.findAllWithAuthor(pageable)
+            : postRepository.searchWithAuthor(keyword, pageable);
+        return posts.map(PostResponse::new);
     }
 
     @Transactional
