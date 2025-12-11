@@ -6,6 +6,12 @@ import {
   HandRaisedIcon,
 } from "@heroicons/react/24/outline";
 
+// Import Mockup Images
+import dashboardPreview from "../assets/images/mockups/dashboard-preview.png";
+import gpaTrend from "../assets/images/mockups/gpa-trend.png";
+import creditDonut from "../assets/images/mockups/credit-donut.png";
+import gradeBar from "../assets/images/mockups/grade-bar.png";
+
 export default function LandingPage() {
   const featuresRef = useRef<HTMLDivElement>(null);
 
@@ -61,6 +67,76 @@ export default function LandingPage() {
             >
               커뮤니티 둘러보기
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Preview Section */}
+      <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+              한눈에 보는 나의 학업 성취도
+            </h2>
+            <p className="mt-4 text-xl text-gray-600">
+              더 이상 엑셀로 계산하지 마세요. 직관적인 대시보드가 준비되어
+              있습니다.
+            </p>
+          </div>
+
+          <div className="relative">
+            {/* Background Decorator */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-full bg-indigo-100/50 rounded-full blur-3xl -z-10"></div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Main Dashboard Preview */}
+              <div className="lg:col-span-12 xl:col-span-8 perspective-1000">
+                <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transform rotate-x-2 transition-transform hover:rotate-0 duration-700 ease-out p-2">
+                  <img
+                    src={dashboardPreview}
+                    alt="Academic Dashboard Preview"
+                    className="w-full h-auto rounded-xl"
+                  />
+                  <div className="absolute inset-0 ring-1 ring-inset ring-black/5 rounded-2xl"></div>
+                </div>
+              </div>
+
+              {/* Smaller Chart Previews */}
+              <div className="lg:col-span-12 xl:col-span-4 space-y-6">
+                <div className="bg-white p-4 rounded-2xl shadow-md border border-gray-50 transform hover:scale-105 transition-transform duration-300">
+                  <h3 className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+                    성적 추이 분석
+                  </h3>
+                  <img
+                    src={gpaTrend}
+                    alt="GPA Trend"
+                    className="w-full h-auto rounded-lg shadow-sm"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white p-3 rounded-2xl shadow-md border border-gray-50 transform hover:scale-105 transition-transform duration-300 delay-75">
+                    <h3 className="text-xs font-semibold text-gray-500 mb-2 text-center">
+                      이수 구분
+                    </h3>
+                    <img
+                      src={creditDonut}
+                      alt="Credit Distribution"
+                      className="w-full h-auto rounded-lg"
+                    />
+                  </div>
+                  <div className="bg-white p-3 rounded-2xl shadow-md border border-gray-50 transform hover:scale-105 transition-transform duration-300 delay-150">
+                    <h3 className="text-xs font-semibold text-gray-500 mb-2 text-center">
+                      등급 분포
+                    </h3>
+                    <img
+                      src={gradeBar}
+                      alt="Grade Distribution"
+                      className="w-full h-auto rounded-lg"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

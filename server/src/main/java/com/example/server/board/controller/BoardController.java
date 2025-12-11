@@ -46,8 +46,9 @@ public class BoardController {
             })
     @GetMapping("/posts")
     public ResponseEntity<Page<PostResponse>> getPosts(
+            @Parameter(description = "검색 키워드") @RequestParam(required = false) String keyword,
             @Parameter(description = "페이지네이션 정보") @PageableDefault(sort = "createdAt,desc") Pageable pageable) {
-        Page<PostResponse> response = boardService.getPosts(pageable);
+        Page<PostResponse> response = boardService.getPosts(keyword, pageable);
         return ResponseEntity.ok(response);
     }
 

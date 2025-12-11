@@ -3,6 +3,7 @@ export interface Pageable {
   page: number;
   size: number;
   sort?: string | string[]; // ex) "createdAt,desc" 또는 ["createdAt,desc", "title,asc"]
+  keyword?: string; // 검색 키워드
 }
 
 // Page 응답 인터페이스

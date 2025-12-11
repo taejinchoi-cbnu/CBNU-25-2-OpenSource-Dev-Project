@@ -20,7 +20,7 @@ export interface AnalysisResult {
   studentId?: string;
   averageGpa?: number;
   totalCredits?: number;
-  gradeSummary?: ServerGradeSummary; 
+  gradeSummary?: ServerGradeSummary;
   semesters: SemesterGrade[];
 }
 

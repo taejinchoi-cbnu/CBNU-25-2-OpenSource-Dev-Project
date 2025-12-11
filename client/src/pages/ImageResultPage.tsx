@@ -17,7 +17,7 @@ import {
   Bar,
   ReferenceLine,
 } from "recharts";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 import { toast } from "react-toastify";
 import { getRequirements } from "../data/graduationRules";
 
@@ -49,18 +49,17 @@ const ImageResultPage: React.FC = () => {
   const handleDownload = async () => {
     if (dashboardRef.current) {
       try {
-        const canvas = await html2canvas(dashboardRef.current, {
-          scale: 2,
-          useCORS: true,
-          logging: false, // eslint-disable-next-line
-        } as any);
+        const dataUrl = await toPng(dashboardRef.current, {
+          quality: 1.0,
+          pixelRatio: 2,
+        });
         const link = document.createElement("a");
         link.download = "grade-report.png";
-        link.href = canvas.toDataURL("image/png");
+        link.href = dataUrl;
         link.click();
         toast.success("리포트가 다운로드되었습니다.");
-      } catch {
-        toast.error("다운로드 중 오류가 발생했습니다.");
+      } catch (error) {
+        toast.error(`다운로드 중 오류가 발생했습니다. ${error}`);
       }
     }
   };
@@ -144,21 +143,13 @@ const ImageResultPage: React.FC = () => {
       ? geRequiredFromSummary + geElectiveFromSummary
       : calculatedGe;
 
-  console.log("Category Credits (from summary or calculated):", {
-    earnedGe,
-    earnedMajorReq,
-    earnedMajorSel,
-    earnedGeneralElective,
-    source: majorRequiredFromSummary !== undefined ? "summary" : "calculated",
-  });
-
   const earnedMajorTotal = earnedMajorReq + earnedMajorSel;
 
   const semesterOrder: Record<string, number> = {
     "1학기": 1,
-    "여름학기": 2,
+    여름학기: 2,
     "2학기": 3,
-    "겨울학기": 4,
+    겨울학기: 4,
   };
 
   const semesterHistory = data.semesters
@@ -177,7 +168,9 @@ const ImageResultPage: React.FC = () => {
         return a.year - b.year;
       }
       // 2. 같은 연도면 학기순 정렬 (1학기 → 여름학기 → 2학기 → 겨울학기)
-      return (semesterOrder[a.semester] || 0) - (semesterOrder[b.semester] || 0);
+      return (
+        (semesterOrder[a.semester] || 0) - (semesterOrder[b.semester] || 0)
+      );
     });
 
   const courseTypeData: ChartData[] = [];
@@ -304,7 +297,7 @@ const ImageResultPage: React.FC = () => {
               <div className="text-5xl font-black text-emerald-500">
                 {Math.round(
                   (finalTotalCredits / (requirements?.totalCredits || 140)) *
-                  100
+                    100
                 )}
                 %
               </div>
@@ -317,8 +310,8 @@ const ImageResultPage: React.FC = () => {
               <div className="text-5xl font-black text-purple-500">
                 {requirements
                   ? Math.round(
-                    (earnedMajorTotal / requirements.majorCredits.total) * 100
-                  )
+                      (earnedMajorTotal / requirements.majorCredits.total) * 100
+                    )
                   : 0}
                 %
               </div>
@@ -447,54 +440,54 @@ const ImageResultPage: React.FC = () => {
                   geRequiredFromSummary !== undefined ||
                   geElectiveFromSummary !== undefined ||
                   freeElectiveFromSummary !== undefined) && (
-                    <div className="mt-6 pt-6 border-t border-gray-200">
-                      <h4 className="text-sm font-semibold text-gray-700 mb-4">
-                        세부 이수 학점
-                      </h4>
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        {majorRequiredFromSummary !== undefined && (
-                          <div className="text-center p-4 bg-purple-50 rounded-lg">
-                            <p className="text-3xl font-bold text-purple-600">
-                              {majorRequiredFromSummary}
-                            </p>
-                            <p className="text-xs text-gray-600 mt-2">전공필수</p>
-                          </div>
-                        )}
-                        {majorElectiveFromSummary !== undefined && (
-                          <div className="text-center p-4 bg-purple-50 rounded-lg">
-                            <p className="text-3xl font-bold text-purple-500">
-                              {majorElectiveFromSummary}
-                            </p>
-                            <p className="text-xs text-gray-600 mt-2">전공선택</p>
-                          </div>
-                        )}
-                        {geRequiredFromSummary !== undefined && (
-                          <div className="text-center p-4 bg-emerald-50 rounded-lg">
-                            <p className="text-3xl font-bold text-emerald-600">
-                              {geRequiredFromSummary}
-                            </p>
-                            <p className="text-xs text-gray-600 mt-2">교양필수</p>
-                          </div>
-                        )}
-                        {geElectiveFromSummary !== undefined && (
-                          <div className="text-center p-4 bg-emerald-50 rounded-lg">
-                            <p className="text-3xl font-bold text-emerald-500">
-                              {geElectiveFromSummary}
-                            </p>
-                            <p className="text-xs text-gray-600 mt-2">교양선택</p>
-                          </div>
-                        )}
-                        {freeElectiveFromSummary !== undefined && (
-                          <div className="text-center p-4 bg-orange-50 rounded-lg">
-                            <p className="text-3xl font-bold text-orange-500">
-                              {freeElectiveFromSummary}
-                            </p>
-                            <p className="text-xs text-gray-600 mt-2">일반선택</p>
-                          </div>
-                        )}
-                      </div>
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-4">
+                      세부 이수 학점
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                      {majorRequiredFromSummary !== undefined && (
+                        <div className="text-center p-4 bg-purple-50 rounded-lg">
+                          <p className="text-3xl font-bold text-purple-600">
+                            {majorRequiredFromSummary}
+                          </p>
+                          <p className="text-xs text-gray-600 mt-2">전공필수</p>
+                        </div>
+                      )}
+                      {majorElectiveFromSummary !== undefined && (
+                        <div className="text-center p-4 bg-purple-50 rounded-lg">
+                          <p className="text-3xl font-bold text-purple-500">
+                            {majorElectiveFromSummary}
+                          </p>
+                          <p className="text-xs text-gray-600 mt-2">전공선택</p>
+                        </div>
+                      )}
+                      {geRequiredFromSummary !== undefined && (
+                        <div className="text-center p-4 bg-emerald-50 rounded-lg">
+                          <p className="text-3xl font-bold text-emerald-600">
+                            {geRequiredFromSummary}
+                          </p>
+                          <p className="text-xs text-gray-600 mt-2">교양필수</p>
+                        </div>
+                      )}
+                      {geElectiveFromSummary !== undefined && (
+                        <div className="text-center p-4 bg-emerald-50 rounded-lg">
+                          <p className="text-3xl font-bold text-emerald-500">
+                            {geElectiveFromSummary}
+                          </p>
+                          <p className="text-xs text-gray-600 mt-2">교양선택</p>
+                        </div>
+                      )}
+                      {freeElectiveFromSummary !== undefined && (
+                        <div className="text-center p-4 bg-orange-50 rounded-lg">
+                          <p className="text-3xl font-bold text-orange-500">
+                            {freeElectiveFromSummary}
+                          </p>
+                          <p className="text-xs text-gray-600 mt-2">일반선택</p>
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
+                )}
               </div>
             </div>
           )}

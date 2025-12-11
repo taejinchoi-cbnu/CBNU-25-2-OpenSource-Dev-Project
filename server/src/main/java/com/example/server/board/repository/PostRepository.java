@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
@@ -13,4 +14,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             countQuery = "select count(p) from Post p"
     )
     Page<Post> findAllWithAuthor(Pageable pageable);
+
+    @Query(
+            value = "select distinct p from Post p join fetch p.author a " +
+                    "where p.title like %:keyword% or p.content like %:keyword%",
+            countQuery = "select count(p) from Post p " +
+                         "where p.title like %:keyword% or p.content like %:keyword%"
+    )
+    Page<Post> searchWithAuthor(@Param("keyword") String keyword, Pageable pageable);
 }

@@ -44,7 +44,6 @@ function ProfilePage() {
       {
         onSuccess: () => {
           toast.success("닉네임이 성공적으로 변경되었습니다.");
-          window.location.reload();
         },
         onError: (error: Error) => {
           let message = "닉네임 변경에 실패했습니다.";
@@ -172,7 +171,7 @@ function ProfilePage() {
                       key={post.id}
                       className="group hover:bg-blue-50/50 transition-colors duration-200 cursor-pointer"
                       onClick={() =>
-                        (window.location.href = `/board/posts/${post.id}`)
+                        (window.location.href = `/board/${post.id}`)
                       }
                     >
                       <div className="p-5 flex justify-between items-center">
@@ -208,7 +207,7 @@ function ProfilePage() {
                       key={index}
                       className="group hover:bg-blue-50/50 transition-colors duration-200 cursor-pointer"
                       onClick={() =>
-                        (window.location.href = `/board/posts/${comment.postId}`)
+                        (window.location.href = `/board/${comment.postId}`)
                       }
                     >
                       <div className="p-5 space-y-2">

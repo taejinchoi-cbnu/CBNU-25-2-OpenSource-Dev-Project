@@ -11,14 +11,22 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   EllipsisHorizontalIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
+
+const SORT_OPTIONS = [
+  { value: "createdAt,desc", label: "최신순" },
+  { value: "viewCount,desc", label: "조회수순" },
+];
 
 const BoardPage = () => {
   const [pageable, setPageable] = useState<Pageable>({
     page: 0,
     size: 10,
     sort: "createdAt,desc",
+    keyword: "",
   });
+  const [searchInput, setSearchInput] = useState("");
   const { data: postsPage, isLoading, isError, error } = useGetPosts(pageable);
   const { accessToken } = useAuthStore();
   const navigate = useNavigate();
@@ -47,6 +55,20 @@ const BoardPage = () => {
   const handleJumpBackward = () => {
     const newPage = Math.max(0, pageable.page - 10);
     setPageable((prev) => ({ ...prev, page: newPage }));
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPageable((prev) => ({ ...prev, page: 0, keyword: searchInput }));
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput("");
+    setPageable((prev) => ({ ...prev, page: 0, keyword: "" }));
+  };
+
+  const handleSortChange = (newSort: string) => {
+    setPageable((prev) => ({ ...prev, sort: newSort, page: 0 }));
   };
 
   if (isLoading)
@@ -189,6 +211,61 @@ const BoardPage = () => {
           </button>
         )}
       </div>
+
+      {/* 정렬 버튼 + 검색 바 */}
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex gap-2">
+          {SORT_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => handleSortChange(option.value)}
+              className={`px-4 py-2 rounded-xl font-medium transition-colors ${
+                pageable.sort === option.value
+                  ? "bg-[var(--color-primary)] text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <form onSubmit={handleSearch} className="flex gap-2">
+          <div className="relative flex-1 max-w-md">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="제목 또는 내용 검색"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)]/20 focus:border-[var(--color-secondary)] transition-all"
+            />
+          </div>
+          <button
+            type="submit"
+            className="px-4 py-2.5 bg-[var(--color-secondary)] text-white rounded-xl hover:bg-[var(--color-secondary)]/90 transition-colors"
+          >
+            검색
+          </button>
+          {pageable.keyword && (
+            <button
+              type="button"
+              onClick={handleClearSearch}
+              className="px-4 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              초기화
+            </button>
+          )}
+        </form>
+      </div>
+
+      {/* 검색 결과 표시 */}
+      {pageable.keyword && (
+        <p className="text-sm text-gray-500 mb-4">
+          &quot;{pageable.keyword}&quot; 검색 결과:{" "}
+          {postsPage?.totalElements || 0}건
+        </p>
+      )}
 
       <div className="glass rounded-2xl overflow-hidden shadow-sm min-h-[600px]">
         {postsPage?.content.length === 0 ? (

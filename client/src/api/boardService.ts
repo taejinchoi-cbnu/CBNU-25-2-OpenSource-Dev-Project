@@ -12,9 +12,9 @@ import type {
 const boardService = {
   // 게시글 목록 조회
   getPosts: async (pageable: Pageable): Promise<Page<Post>> => {
-    const { page, size, sort } = pageable;
+    const { page, size, sort, keyword } = pageable;
     const response = await apiClient.get("/board/posts", {
-      params: { page, size, sort },
+      params: { page, size, sort, keyword },
     });
     return response.data;
   },
