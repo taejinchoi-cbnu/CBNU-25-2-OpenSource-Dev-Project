@@ -24,8 +24,21 @@
 
 - [Notion](https://www.notion.so/25-2-26578130257c803f8a5fcda3bd265ccc?source=copy_link)
 
-## 프로젝트 시연 동영상
+## 프로젝트 시연 동영상 및 사진
 - [Youtube](https://youtu.be/6h25KTxHPcs)
+
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/dd00f62e-c8c3-4e15-9ee6-25aa9335f70a" alt="demo-1" width="600" /></td>
+    <td><img src="https://github.com/user-attachments/assets/65eca82e-c0df-477a-bd8d-2e5a2bf9fc8d" alt="demo-2" width="600" /></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/9126ccc7-1ed4-4dc2-a946-9f6187c43c16" alt="demo-3" width="600" /></td>
+    <td><img src="https://github.com/user-attachments/assets/2247544b-8fba-414e-9dd5-77715389026e" alt="demo-4" width="600" /></td>
+  </tr>
+</table>
+
+
 
 # 프로젝트 수행 후 느낌과 향후 발전 방향
 
